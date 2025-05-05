@@ -13,7 +13,7 @@ EXCEL_FILE = "./sito/diagnosi.xlsx"
 
 @app.route("/")
 def index():
-    return render_template("test.html")
+    return render_template("index.html")
 
 @app.route("/")
 def home():
