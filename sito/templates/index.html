@@ -419,7 +419,7 @@
 
   <script>
 
-    function predictClass() {
+    async function predictClass() {
 
       const D = parseInt(document.getElementById('DuctRetrodilatation').value);
 
@@ -576,11 +576,46 @@
 	resultDiv.style.color = textColor; // Applica il colore del testo
 
 	resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
-
+  // Dopo aver calcolato il risultato, raccogli i dati:
+  const formData = {
+      DuctRetrodilatation: D,
+      VesselCompression: V,
+      Lymphadenopathy: L,
+      Margins: M,
+      Ecostructure: E,
+      prediction: result,
+      datetime: new Date().toISOString()
+	};
+	  
+	      // Ottieni l’IP pubblico
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      formData.ip = data.ip;
+    } catch (e) {
+      formData.ip = "IP non disponibile";
     }
 
+    sendToServer(formData);
+  }
   </script>
+  
+  <script>
+		  // Mostra IP e data/ora
+  async function showConnectionInfo() {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      const ip = data.ip;
+      const now = new Date().toLocaleString();
+      document.getElementById("connectionInfo").innerText = `Indirizzo IP: ${ip} | Connessione: ${now}`;
+    } catch (e) {
+      document.getElementById("connectionInfo").innerText = "Impossibile recuperare l'indirizzo IP.";
+    }
+  }
 
+  showConnectionInfo();
+  </script>
 </body>
 
 </html>
