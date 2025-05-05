@@ -422,6 +422,17 @@
 
 
   <script>
+    async function sendToServer(data) {
+      try {
+      await fetch("/salva", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      } catch (error) {
+      console.error("Errore nell'invio al server:", error);
+      }
+    }
 
     async function predictClass() {
 
