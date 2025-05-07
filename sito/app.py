@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Percorso assoluto del file Excel su PythonAnywhere
-EXCEL_FILE = "/home/teozaffo/stage/diagnosi.xlsx"
+EXCEL_FILE = "./sito/diagnosi.xlsx"
 
 @app.route("/")
 def index():
@@ -58,3 +58,4 @@ def salva_diagnosi():
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
+    
