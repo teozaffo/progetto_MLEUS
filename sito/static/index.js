@@ -1,22 +1,51 @@
+let currModel = "DT"
+
+async function showConnectionInfo() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    const ip = data.ip;
+    const now = new Date().toLocaleString();
+    document.getElementById("connectionInfo").innerText = `Indirizzo IP: ${ip} | Connessione: ${now}`;
+  } catch (e) {
+    document.getElementById("connectionInfo").innerText = "Impossibile recuperare l'indirizzo IP.";
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  const models = ["DT", "NB", "LR"]
+  showConnectionInfo();
+  document
+    .getElementById("predictButton")
+    .addEventListener("click", () => predictClass());
 
-  document.getElementById("DT").style.backgroundColor = "#007bff"
-  document.getElementById("DT").style.color = "white"
+  const models = ["DT", "NB", "LR"];
 
-  setMandatoryFeaturesDT()
+  document.getElementById("DT").style.backgroundColor = "#007bff";
+  document.getElementById("DT").style.color = "white";
+
+  setMandatoryFeaturesDT();
 
   models.forEach(model => {
-    addEventListenersForModelButtons(model, models)
-  })
-})
+    addEventListenersForModelButtons(model, models);
+	
+  });
+  document.getElementById("inputForm DT").reset();
+});
 
 const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
     document.getElementById(model).style.backgroundColor = "#007bff"
     document.getElementById(model).style.color = "white"
+	
+	currModel = model
 
     setMandatoryFeatures(model)
+	
+	//Ripristina il colore di sfondo di tutti i campi
+	allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
+	  const el = document.getElementById(id);
+	  el.style.backgroundColor = "white";
+	});
 
     models.map(innerModel => {
       if (innerModel !== model) {
@@ -25,8 +54,8 @@ const addEventListenersForModelButtons = (model, models) => {
         document.getElementById(innerModel).style.borderColor = "#007bff"
       }
     });
-    
-    	  // 🔄 Reset risultati e messaggi
+	
+	  //Reset risultati e messaggi
   document.getElementById("result").innerText = "";
   document.getElementById("result").style.backgroundColor = "white";
   document.getElementById("result").style.color = "black";
@@ -143,6 +172,317 @@ function validateMandatoryFields() {
       missingFields.push(id);
     }
   });
+
+  return missingFields;
+}
+
+const predictClass = () => {
+  // 🔄 Ripristina colore bianco a tutti i campi
+  allFeatures.forEach(id => {
+	document.getElementById(id).style.backgroundColor = "white";
+  });
+
+  // ❗ Messaggio di errore per i campi obbligatori
+  const validationError = document.getElementById("validationError");
+  validationError.innerText = "";
+
+  const missing = validateMandatoryFields();
+
+  if (missing.length > 0) {
+	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+	validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
+
+	// Evidenzia i campi mancanti
+	missing.forEach(id => {
+	  document.getElementById(id).style.backgroundColor = "#fff3cd";
+	});
+
+	return;
+  }	
+  if (currModel === "DT") {
+    setPredictionLogicFE()
+  } else {
+    setPredictionLogicBE()
+  }
+}
+
+const parseFormData = (result) => {
+  return {
+	model: currModel,
+	datetime: new Date().toISOString(),
+	Age: parseInt(document.getElementById('Age').value),
+	Sex: parseInt(document.getElementById('Sex').value),
+	Dim1: parseInt(document.getElementById('Dim1').value),
+    Dim2: parseInt(document.getElementById('Dim2').value),
+	Veins: parseInt(document.getElementById('Veins').value),
+    Arteries: parseInt(document.getElementById('Arteries').value),   
+    DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
+    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
+    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
+    Margins: parseInt(document.getElementById('Margins').value),
+    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
+    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+	ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
+	prediction: result,
+    
+    
+  };
+}
+
+const predictFromServer = async (data) => {
+  try {
+    const response = await fetch(`/model_predict`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Errore nell'invio al server:", error);
+  }
+}
+
+const sendToServer = async (data) => {
+  try {
+    const response = await fetch(`/salva`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  } catch (error) {
+    console.error("Errore nell'invio al server:", error);
+  }
+}
+
+const setPredictionLogicFE = async () => {
+  const D = parseInt(document.getElementById('DuctRetrodilatation').value);
+
+  const V = parseInt(document.getElementById('VesselCompression').value);
+
+  const L = parseInt(document.getElementById('Lymphadenopathy').value);
+
+  const M = parseInt(document.getElementById('Margins').value);
+
+  const E = parseInt(document.getElementById('Ecostructure').value);
+
+
+
+  const errorDiv = document.getElementById('error');
+
+  const resultDiv = document.getElementById('result');
+
+  errorDiv.innerText = '';
+
+  resultDiv.innerText = '';
+
+  resultDiv.style.backgroundColor = '';
+
+  resultDiv.style.color = '';
+
+
+
+  if ([D, V, L, M, E].some(v => isNaN(v))) {
+
+    errorDiv.innerText = 'Please enter valid numeric values for all fields using dot (.) as decimal separator.';
+
+    return;
+
+  }
+
+
+
+  let result = 'uncertain case';
+
+  let color = 'black';
+
+  let boxColor = 'white';
+
+
+
+  // Define all conditions as rule blocks
+
+  const rules = [
+
+    { c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
+
+    { c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+    { c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+    { c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
+
+
+
+    { c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
+
+    { c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+    { c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
+
+    { c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+
+
+    { c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
+
+    { c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#E6E6FF' },
+
+    { c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
+
+    { c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+
+
+    { c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
+
+    { c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+    { c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
+
+    { c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
+
+
+
+    { c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
+
+    { c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
+
+    { c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'white', boxColor: '#960000' },
+
+    { c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
+
+
+
+    { c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
+
+    { c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+    { c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
+
+    { c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
+
+
+
+    { c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
+
+    { c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+    { c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFB4B4' },
+
+    { c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+
+
+    { c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 0, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+    { c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+    { c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
+
+    { c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
+
+
+
+  ];
+
+
+
+  for (let rule of rules) {
+
+    if (rule.c()) {
+
+      result = rule.r;
+
+      textColor = rule.textColor; // Recupera il colore del testo dalla regola
+
+      boxColor = rule.boxColor;   // Recupera il colore di sfondo dalla regola
+
+      break;
+
+    }
+
+  }
+
+
+  resultDiv.innerText = `:: ${result} ::`;
+
+  resultDiv.style.color = textColor; // Applica il colore del testo
+
+  resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
+  // Dopo aver calcolato il risultato, raccogli i dati:
+  const formData = parseFormData(result)
+    
+  // Ottieni l’IP pubblico
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    formData.ip = data.ip;
+  } catch (e) {
+    formData.ip = "IP non disponibile";
+  }
+
+  sendToServer(formData);
+}
+
+const setPredictionLogicBE = async () => {
+  const formData = parseFormData()
+
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    formData.ip = data.ip;
+  } catch (e) {
+    formData.ip = "IP non disponibile";
+  }
+
+  result = await predictFromServer(formData);
+
+	
+
+  console.log(result.prediction);
+
+  const errorDiv = document.getElementById('error');
+
+  const resultDiv = document.getElementById('result');
+
+  errorDiv.innerText = '';
+
+  resultDiv.innerText = '';
+
+  resultDiv.style.backgroundColor = `${result.backgroundColor}`;
+
+  if (parseFloat(result.prediction) <= 0.25 || parseFloat(result.prediction) >= 0.75) {
+    resultDiv.style.color = 'white';
+  } else {
+    resultDiv.style.color = 'black';
+  }
+
+  resultDiv.innerText = `:: ${result.prediction}% Malignant ::`;
+}
+
+window.onload = () => {
+  // Pulisce tutti i campi di input e select
+  const fieldsToReset = [
+    'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilatation',
+    'VesselCompression', 'Lymphadenopathy', 'Margins', 'Ecostructure',
+    'Multiple', 'HospitalCenter', 'ProtocolCode'
+  ];
+  
+  fieldsToReset.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === "INPUT") el.value = "";
+    if (el.tagName === "SELECT") el.selectedIndex = 0;
+    el.style.backgroundColor = "white";
+  });
+
+  document.getElementById("result").innerText = "";
+  document.getElementById("result").style.backgroundColor = "white";
+  document.getElementById("result").style.color = "black";
+  document.getElementById("error").innerText = "";
+  document.getElementById("validationError").innerText = "";
+};
 
   return missingFields;
 }
