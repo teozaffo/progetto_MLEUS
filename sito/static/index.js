@@ -24,8 +24,15 @@ const addEventListenersForModelButtons = (model, models) => {
         document.getElementById(innerModel).style.backgroundColor = "white"
         document.getElementById(innerModel).style.borderColor = "#007bff"
       }
-    })
-  })
+    });
+    
+    	  // 🔄 Reset risultati e messaggi
+  document.getElementById("result").innerText = "";
+  document.getElementById("result").style.backgroundColor = "white";
+  document.getElementById("result").style.color = "black";
+  document.getElementById("error").innerText = "";
+  document.getElementById("validationError").innerText = "";
+	});
 }
 
 const setMandatoryFeatures = (model) => {
@@ -121,4 +128,21 @@ const setMandatoryFeaturesLR = () => {
       document.getElementById(feature).classList.add('optional')
     }
   })
+}
+
+function validateMandatoryFields() {
+  const mandatoryElements = document.querySelectorAll('.mandatory');
+  let missingFields = [];
+
+  mandatoryElements.forEach(elem => {
+    const id = elem.id;
+    const value = document.getElementById(id).value;
+
+    // Considera vuoto anche "NaN" o stringa vuota per i numerici
+    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
+      missingFields.push(id);
+    }
+  });
+
+  return missingFields;
 }
