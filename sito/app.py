@@ -1,11 +1,11 @@
 # app.py
+from flexible_scaler import FlexibleScaler
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pandas as pd
 import os
-import pytz
 from datetime import datetime
-from openpyxl import load_workbook
+from model_prediction import predict_input
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +21,7 @@ def index():
 def home():
     return "✅ Server Flask attivo su PythonAnywhere!"
 
+# Route per salvare i dati nel file Excel
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
     data = request.get_json()
@@ -84,4 +85,18 @@ def salva_diagnosi():
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
- 
+
+    
+@app.route("/model_predict", methods=["POST"])
+def model_predict():
+    data = request.get_json()
+    try :
+        lr_result, color = predict_input(data)
+        return jsonify({
+            "message": "case Predicted Succesfully!",
+            "prediction": str(lr_result),
+            "backgroundColor": color
+        }) 
+    except Exception as e:
+        print(f"Encountered Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
