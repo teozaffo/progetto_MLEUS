@@ -235,11 +235,6 @@
 
     <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
-    <!-- <div id="connectionInfo" style="text-align: center; font-size: 0.95rem; color: #444; margin-bottom: 1.5rem;">
-      Caricamento informazioni di connessione...
-    
-	</div> -->
-
     <h3> Select the Model you prefer :</h3>
 
     <div class="btn-group">
@@ -248,7 +243,7 @@
       <button class="model-btn" id="LR">Specific (LR)</button>
     </div>
 
-<form id="inputForm DT">
+<form id="inputForm DT autocomplete="off"">
 
   <div class="form-row">
 
@@ -426,8 +421,8 @@
 
   <p class="information"><br>*fields with red borders are mandatory fields!!</p>
 
-  <button type="button" onclick="predictClass()">Classify</button>
-  
+  <button id="predictButton" type="button">Classify</button>
+
   <div class="error" id="validationError" style="color: red; margin-top: 1rem; text-align: center;"></div>
 
 
@@ -438,256 +433,7 @@
     <div class="error" id="error"></div>
 
   </div>
-
-
-
-  <script>
-    async function sendToServer(data) {
-      try {
-      await fetch("/salva", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      } catch (error) {
-      console.error("Errore nell'invio al server:", error);
-      }
-    }
-	
-
-	let selectedModel = "DT"; // default all'avvio
-
-
-	async function predictClass() {
-	  // 🔄 Ripristina colore bianco a tutti i campi
-	  allFeatures.forEach(id => {
-		document.getElementById(id).style.backgroundColor = "white";
-	  });
-
-	  // ❗ Messaggio di errore per i campi obbligatori
-	  const validationError = document.getElementById("validationError");
-	  validationError.innerText = "";
-
-	  const missing = validateMandatoryFields();
-
-	  if (missing.length > 0) {
-		const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-		validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
-
-		// 🔶 Evidenzia i campi mancanti
-		missing.forEach(id => {
-		  document.getElementById(id).style.backgroundColor = "#fff3cd";
-		});
-
-		return;
-	  }
-
-      const D = parseInt(document.getElementById('DuctRetrodilatation').value);
-
-      const V = parseInt(document.getElementById('VesselCompression').value);
-
-      const L = parseInt(document.getElementById('Lymphadenopathy').value);
-
-      const M = parseInt(document.getElementById('Margins').value);
-
-      const E = parseInt(document.getElementById('Ecostructure').value);
-
-
-
-      const errorDiv = document.getElementById('error');
-
-      const resultDiv = document.getElementById('result');
-
-      errorDiv.innerText = '';
-
-      resultDiv.innerText = '';
-
-      resultDiv.style.backgroundColor = '';
-
-      resultDiv.style.color = '';
-
-
-
-      if ([D, V, L, M, E].some(v => isNaN(v))) {
-
-        errorDiv.innerText = 'Please enter valid numeric values for all fields using dot (.) as decimal separator.';
-
-        return;
-
-      }
-
-
-
-      let result = 'uncertain case';
-
-      let color = 'black';
-
-      let boxColor = 'white';
-
-
-
-      // Define all conditions as rule blocks
-
-      const rules = [
-
-       		{ c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-		{ c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		{ c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		{ c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-		
-
-		{ c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
-		
-		{ c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-		{ c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-		{ c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		
-
-		{ c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
-
-		{ c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#E6E6FF' },
-
-		{ c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-		{ c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		
-
-		{ c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-		{ c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		{ c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-		{ c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-		
-
-		{ c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-		{ c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
-
-		{ c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'white', boxColor: '#960000' },
-
-		{ c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
-
-		
-
-		{ c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
-		
-		{ c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-		{ c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-		{ c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-		
-
-		{ c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
-
-		{ c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-		{ c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFB4B4' },
-
-		{ c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-		
-
-		{ c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 0, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-		
-		{ c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-		{ c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-		
-		{ c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-
-
-      ];
-
-
-
-	for (let rule of rules) {
-
-  	if (rule.c()) {
-
-    	result = rule.r;
-
-    	textColor = rule.textColor; // Recupera il colore del testo dalla regola
-
-    	boxColor = rule.boxColor;   // Recupera il colore di sfondo dalla regola
-
-    	break;
-
-  	}
-
-	}
-
-
-
-	resultDiv.innerText = `:: ${result} ::`;
-
-	resultDiv.style.color = textColor; // Applica il colore del testo
-
-	resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
-  // Dopo aver calcolato il risultato, raccogli i dati:
-	const formData = {
-	  model: selectedModel,
-	  datetime: new Date().toISOString(),
-
-	  Age: parseInt(document.getElementById("Age").value),
-	  Sex: parseInt(document.getElementById("Sex").value),
-	  Dim1: parseFloat(document.getElementById("Dim1").value),
-	  Dim2: parseFloat(document.getElementById("Dim2").value),
-	  Veins: parseInt(document.getElementById("Veins").value),
-	  Arteries: parseInt(document.getElementById("Arteries").value),
-	  DuctRetrodilatation: parseInt(document.getElementById("DuctRetrodilatation").value),
-	  VesselCompression: parseInt(document.getElementById("VesselCompression").value),
-	  Lymphadenopathy: parseInt(document.getElementById("Lymphadenopathy").value),
-	  Margins: parseInt(document.getElementById("Margins").value),
-	  Ecostructure: parseInt(document.getElementById("Ecostructure").value),
-	  Multiple: parseInt(document.getElementById("Multiple").value),
-	  HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
-	  ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
-	  prediction: result
-	};
-	  
-	      // Ottieni l’IP pubblico
-    try {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      formData.ip = data.ip;
-    } catch (e) {
-      formData.ip = "IP non disponibile";
-    }
-
-    sendToServer(formData);
-  }
-  </script>
   
-  <script>
-		  // Mostra IP e data/ora
-  async function showConnectionInfo() {
-    try {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      const ip = data.ip;
-      const now = new Date().toLocaleString();
-      document.getElementById("connectionInfo").innerText = `Indirizzo IP: ${ip} | Connessione: ${now}`;
-    } catch (e) {
-      document.getElementById("connectionInfo").innerText = "Impossibile recuperare l'indirizzo IP.";
-    }
-  }
-
-  showConnectionInfo();
-  </script>
 </body>
 
 </html>
