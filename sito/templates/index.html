@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Decision Tree for Pancreatic Ductal adenocarcinoma</title>
+  <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
 
   <style>
 
@@ -233,11 +233,12 @@
 
   <div class="container">
 
-    <h2>Predictors for Pancreatic Ductal adenocarcinoma</h2>
+    <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
-    <div id="connectionInfo" style="text-align: center; font-size: 0.95rem; color: #444; margin-bottom: 1.5rem;">
+    <!-- <div id="connectionInfo" style="text-align: center; font-size: 0.95rem; color: #444; margin-bottom: 1.5rem;">
       Caricamento informazioni di connessione...
-    </div>
+    
+	</div> -->
 
     <h3> Select the Model you prefer :</h3>
 
@@ -406,10 +407,29 @@
     </select>
 
   </div>
+  
+  <div class="form-row">
+  
+  <label for="HospitalCenter">Hospital Center</label>
+  
+  <input id="HospitalCenter" type="text" class="optional">
+  
+</div>
+
+<div class="form-row">
+
+  <label for="ProtocolCode">Protocol Code</label>
+  
+  <input id="ProtocolCode" type="text" class="optional">
+  
+</div>
 
   <p class="information"><br>*fields with red borders are mandatory fields!!</p>
 
   <button type="button" onclick="predictClass()">Classify</button>
+  
+  <div class="error" id="validationError" style="color: red; margin-top: 1rem; text-align: center;"></div>
+
 
 </form>
 
@@ -433,8 +453,34 @@
       console.error("Errore nell'invio al server:", error);
       }
     }
+	
 
-    async function predictClass() {
+	let selectedModel = "DT"; // default all'avvio
+
+
+	async function predictClass() {
+	  // 🔄 Ripristina colore bianco a tutti i campi
+	  allFeatures.forEach(id => {
+		document.getElementById(id).style.backgroundColor = "white";
+	  });
+
+	  // ❗ Messaggio di errore per i campi obbligatori
+	  const validationError = document.getElementById("validationError");
+	  validationError.innerText = "";
+
+	  const missing = validateMandatoryFields();
+
+	  if (missing.length > 0) {
+		const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+		validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
+
+		// 🔶 Evidenzia i campi mancanti
+		missing.forEach(id => {
+		  document.getElementById(id).style.backgroundColor = "#fff3cd";
+		});
+
+		return;
+	  }
 
       const D = parseInt(document.getElementById('DuctRetrodilatation').value);
 
@@ -592,14 +638,25 @@
 
 	resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
   // Dopo aver calcolato il risultato, raccogli i dati:
-  const formData = {
-      DuctRetrodilatation: D,
-      VesselCompression: V,
-      Lymphadenopathy: L,
-      Margins: M,
-      Ecostructure: E,
-      prediction: result,
-      datetime: new Date().toISOString()
+	const formData = {
+	  model: selectedModel,
+	  datetime: new Date().toISOString(),
+
+	  Age: parseInt(document.getElementById("Age").value),
+	  Sex: parseInt(document.getElementById("Sex").value),
+	  Dim1: parseFloat(document.getElementById("Dim1").value),
+	  Dim2: parseFloat(document.getElementById("Dim2").value),
+	  Veins: parseInt(document.getElementById("Veins").value),
+	  Arteries: parseInt(document.getElementById("Arteries").value),
+	  DuctRetrodilatation: parseInt(document.getElementById("DuctRetrodilatation").value),
+	  VesselCompression: parseInt(document.getElementById("VesselCompression").value),
+	  Lymphadenopathy: parseInt(document.getElementById("Lymphadenopathy").value),
+	  Margins: parseInt(document.getElementById("Margins").value),
+	  Ecostructure: parseInt(document.getElementById("Ecostructure").value),
+	  Multiple: parseInt(document.getElementById("Multiple").value),
+	  HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+	  ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
+	  prediction: result
 	};
 	  
 	      // Ottieni l’IP pubblico
