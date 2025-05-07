@@ -88,7 +88,6 @@ const setMandatoryFeaturesNB = () => {
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesNB.includes(feature)) {
-      console.log(feature)
       document.getElementById(feature).classList.remove('optional')
       document.getElementById(feature).classList.add('mandatory')
     } else {
