@@ -1,19 +1,6 @@
 let currModel = "DT"
 
-async function showConnectionInfo() {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    const ip = data.ip;
-    const now = new Date().toLocaleString();
-    document.getElementById("connectionInfo").innerText = `Indirizzo IP: ${ip} | Connessione: ${now}`;
-  } catch (e) {
-    document.getElementById("connectionInfo").innerText = "Impossibile recuperare l'indirizzo IP.";
-  }
-}
-
 document.addEventListener('DOMContentLoaded', function () {
-  showConnectionInfo();
   document
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
@@ -198,6 +185,7 @@ const predictClass = () => {
 
 	return;
   }	
+
   if (currModel === "DT") {
     setPredictionLogicFE()
   } else {
@@ -209,18 +197,19 @@ const parseFormData = (result) => {
   return {
 	model: currModel,
 	datetime: new Date().toISOString(),
-	Age: parseInt(document.getElementById('Age').value),
-	Sex: parseInt(document.getElementById('Sex').value),
+	age: parseInt(document.getElementById('Age').value),
+	sex: parseInt(document.getElementById('Sex').value),
 	Dim1: parseInt(document.getElementById('Dim1').value),
-    Dim2: parseInt(document.getElementById('Dim2').value),
+  Dim2: parseInt(document.getElementById('Dim2').value),
 	Veins: parseInt(document.getElementById('Veins').value),
-    Arteries: parseInt(document.getElementById('Arteries').value),   
-    DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
-    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
-    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
-    Margins: parseInt(document.getElementById('Margins').value),
-    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
-    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+  Arteries: parseInt(document.getElementById('Arteries').value),   
+  DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
+  VesselCompression: parseInt(document.getElementById('VesselCompression').value),
+  Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
+  Margins: parseInt(document.getElementById('Margins').value),
+  Ecostructure: parseInt(document.getElementById('Ecostructure').value),
+  Multiple: parseInt(document.getElementById('Multiple').value),
+  HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
 	ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
 	prediction: result,
     
@@ -483,5 +472,4 @@ window.onload = () => {
   document.getElementById("validationError").innerText = "";
 
 
-  return missingFields;
 }
