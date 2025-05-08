@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Decision Tree for Pancreatic Ductal adenocarcinoma</title>
+  <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
 
   <style>
 
@@ -233,11 +233,7 @@
 
   <div class="container">
 
-    <h2>Predictors for Pancreatic Ductal adenocarcinoma</h2>
-
-    <div id="connectionInfo" style="text-align: center; font-size: 0.95rem; color: #444; margin-bottom: 1.5rem;">
-      Caricamento informazioni di connessione...
-    </div>
+    <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
     <h3> Select the Model you prefer :</h3>
 
@@ -247,7 +243,7 @@
       <button class="model-btn" id="LR">Specific (LR)</button>
     </div>
 
-<form id="inputForm DT">
+<form id="inputForm DT autocomplete="off"">
 
   <div class="form-row">
 
@@ -406,10 +402,29 @@
     </select>
 
   </div>
+  
+  <div class="form-row">
+  
+  <label for="HospitalCenter">Hospital Center</label>
+  
+  <input id="HospitalCenter" type="text" class="optional">
+  
+</div>
+
+<div class="form-row">
+
+  <label for="ProtocolCode">Protocol Code</label>
+  
+  <input id="ProtocolCode" type="text" class="optional">
+  
+</div>
 
   <p class="information"><br>*fields with red borders are mandatory fields!!</p>
 
-  <button type="button" id="predictButton">Classify</button>
+  <button id="predictButton" type="button">Classify</button>
+
+  <div class="error" id="validationError" style="color: red; margin-top: 1rem; text-align: center;"></div>
+
 
 </form>
 
@@ -418,6 +433,7 @@
     <div class="error" id="error"></div>
 
   </div>
+  
 </body>
 
 </html>

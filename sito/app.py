@@ -21,6 +21,7 @@ def index():
 def home():
     return "✅ Server Flask attivo su PythonAnywhere!"
 
+# Route per salvare i dati nel file Excel
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
     data = request.get_json()
@@ -28,38 +29,63 @@ def salva_diagnosi():
 
     # Costruisci la nuova riga da salvare
     new_row = {
-        "datetime": data.get("datetime", datetime.now().isoformat()),
-        "ip": data.get("ip", request.remote_addr),
-        "DuctRetrodilatation": data.get("DuctRetrodilatation"),
-        "VesselCompression": data.get("VesselCompression"),
+        "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
+        "Ip Address": data.get("ip", request.remote_addr),
+        "Model": data.get("model", "unknown"),
+        "Hospital Center": data.get("HospitalCenter", ""),
+        "Protocol Code": data.get("ProtocolCode", ""),
+        "Age": data.get("Age"),
+        "Sex": data.get("Sex"),
+        "Max Dim": data.get("Dim1"),
+        "Min Dim": data.get("Dim2"),
+        "Veinous Inf": data.get("Veins"),
+        "Arterious Inf": data.get("Arteries"),
+        "Duct Ret/Ductal Inv": data.get("DuctRetrodilatation"),
+        "Vessel Comp": data.get("VesselCompression"),
         "Lymphadenopathy": data.get("Lymphadenopathy"),
-        "Margins": data.get("Margins"),
-        "Ecostructure": data.get("Ecostructure"),
-        "prediction": data.get("prediction")
+        "Reg Margins": data.get("Margins"),
+        "Echogenicity": data.get("Ecostructure"),
+        "Mult Lesions": data.get("Multiple"),
+        "Prediction": data.get("prediction")
     }
 
     print("📄 Riga da salvare:", new_row)
 
     try:
-        # Leggi o crea il file Excel
+        # Se il file non esiste, crea un nuovo DataFrame con intestazioni
         if os.path.exists(EXCEL_FILE):
             df = pd.read_excel(EXCEL_FILE)
             print("📂 File Excel trovato con", len(df), "righe")
         else:
-            df = pd.DataFrame()
-            print("📁 File non trovato, ne creo uno nuovo")
+            df = pd.DataFrame(columns=new_row.keys())
+            print("📁 File non trovato, ne creo uno nuovo con intestazioni")
 
         # Aggiungi la nuova riga
         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
         # Salva il file
         df.to_excel(EXCEL_FILE, index=False)
+        # Allarga automaticamente le colonne
+        from openpyxl.utils import get_column_letter
+
+        wb = load_workbook(EXCEL_FILE)
+        ws = wb.active
+
+        for column_cells in ws.columns:
+            length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
+            adjusted_width = length + 2  # margine extra
+            col_letter = get_column_letter(column_cells[0].column)
+            ws.column_dimensions[col_letter].width = adjusted_width
+
+        wb.save(EXCEL_FILE)
+
         print("💾 Dati scritti correttamente su", EXCEL_FILE)
 
         return jsonify({"message": "Dati salvati con successo"})
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
+
     
 @app.route("/model_predict", methods=["POST"])
 def model_predict():

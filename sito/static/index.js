@@ -13,36 +13,39 @@ async function showConnectionInfo() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  showConnectionInfo()
+  showConnectionInfo();
   document
     .getElementById("predictButton")
-    .addEventListener("click", () => predictClass())
+    .addEventListener("click", () => predictClass());
 
-  const models = ["DT", "NB", "LR"]
+  const models = ["DT", "NB", "LR"];
 
-  document.getElementById("DT").style.backgroundColor = "#007bff"
-  document.getElementById("DT").style.color = "white"
+  document.getElementById("DT").style.backgroundColor = "#007bff";
+  document.getElementById("DT").style.color = "white";
 
-  setMandatoryFeaturesDT()
+  setMandatoryFeaturesDT();
 
   models.forEach(model => {
-    addEventListenersForModelButtons(model, models)
-  })
-
-  switch (currModel) {
-    case "DT":
-
-  }
-})
+    addEventListenersForModelButtons(model, models);
+	
+  });
+  document.getElementById("inputForm DT").reset();
+});
 
 const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
     document.getElementById(model).style.backgroundColor = "#007bff"
     document.getElementById(model).style.color = "white"
-
-    currModel = model
+	
+	currModel = model
 
     setMandatoryFeatures(model)
+	
+	//Ripristina il colore di sfondo di tutti i campi
+	allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
+	  const el = document.getElementById(id);
+	  el.style.backgroundColor = "white";
+	});
 
     models.map(innerModel => {
       if (innerModel !== model) {
@@ -50,8 +53,15 @@ const addEventListenersForModelButtons = (model, models) => {
         document.getElementById(innerModel).style.backgroundColor = "white"
         document.getElementById(innerModel).style.borderColor = "#007bff"
       }
-    })
-  })
+    });
+	
+	  //Reset risultati e messaggi
+  document.getElementById("result").innerText = "";
+  document.getElementById("result").style.backgroundColor = "white";
+  document.getElementById("result").style.color = "black";
+  document.getElementById("error").innerText = "";
+  document.getElementById("validationError").innerText = "";
+	});
 }
 
 const setMandatoryFeatures = (model) => {
@@ -148,7 +158,46 @@ const setMandatoryFeaturesLR = () => {
   })
 }
 
+function validateMandatoryFields() {
+  const mandatoryElements = document.querySelectorAll('.mandatory');
+  let missingFields = [];
+
+  mandatoryElements.forEach(elem => {
+    const id = elem.id;
+    const value = document.getElementById(id).value;
+
+    // Considera vuoto anche "NaN" o stringa vuota per i numerici
+    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
+      missingFields.push(id);
+    }
+  });
+
+  return missingFields;
+}
+
 const predictClass = () => {
+  // 🔄 Ripristina colore bianco a tutti i campi
+  allFeatures.forEach(id => {
+	document.getElementById(id).style.backgroundColor = "white";
+  });
+
+  // ❗ Messaggio di errore per i campi obbligatori
+  const validationError = document.getElementById("validationError");
+  validationError.innerText = "";
+
+  const missing = validateMandatoryFields();
+
+  if (missing.length > 0) {
+	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+	validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
+
+	// Evidenzia i campi mancanti
+	missing.forEach(id => {
+	  document.getElementById(id).style.backgroundColor = "#fff3cd";
+	});
+
+	return;
+  }	
   if (currModel === "DT") {
     setPredictionLogicFE()
   } else {
@@ -158,21 +207,24 @@ const predictClass = () => {
 
 const parseFormData = (result) => {
   return {
+	model: currModel,
+	datetime: new Date().toISOString(),
+	Age: parseInt(document.getElementById('Age').value),
+	Sex: parseInt(document.getElementById('Sex').value),
+	Dim1: parseInt(document.getElementById('Dim1').value),
+    Dim2: parseInt(document.getElementById('Dim2').value),
+	Veins: parseInt(document.getElementById('Veins').value),
+    Arteries: parseInt(document.getElementById('Arteries').value),   
     DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
     VesselCompression: parseInt(document.getElementById('VesselCompression').value),
     Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
     Margins: parseInt(document.getElementById('Margins').value),
     Ecostructure: parseInt(document.getElementById('Ecostructure').value),
-    age: parseInt(document.getElementById('Age').value),
-    sex: parseInt(document.getElementById('Sex').value),
-    Dim1: parseInt(document.getElementById('Dim1').value),
-    Dim2: parseInt(document.getElementById('Dim2').value),
-    Arteries: parseInt(document.getElementById('Arteries').value),
-    Veins: parseInt(document.getElementById('Veins').value),
-    Multiple: parseInt(document.getElementById('Margins').value),
-    prediction: result,
-    datetime: new Date().toISOString(),
-    model: currModel
+    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+	ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
+	prediction: result,
+    
+    
   };
 }
 
@@ -352,7 +404,6 @@ const setPredictionLogicFE = async () => {
   }
 
 
-
   resultDiv.innerText = `:: ${result} ::`;
 
   resultDiv.style.color = textColor; // Applica il colore del testo
@@ -370,7 +421,7 @@ const setPredictionLogicFE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  //sendToServer(formData);
+  sendToServer(formData);
 }
 
 const setPredictionLogicBE = async () => {
@@ -385,6 +436,8 @@ const setPredictionLogicBE = async () => {
   }
 
   result = await predictFromServer(formData);
+
+	
 
   console.log(result.prediction);
 
@@ -405,4 +458,30 @@ const setPredictionLogicBE = async () => {
   }
 
   resultDiv.innerText = `:: ${result.prediction}% Malignant ::`;
+}
+
+window.onload = () => {
+  // Pulisce tutti i campi di input e select
+  const fieldsToReset = [
+    'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilatation',
+    'VesselCompression', 'Lymphadenopathy', 'Margins', 'Ecostructure',
+    'Multiple', 'HospitalCenter', 'ProtocolCode'
+  ];
+  
+  fieldsToReset.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === "INPUT") el.value = "";
+    if (el.tagName === "SELECT") el.selectedIndex = 0;
+    el.style.backgroundColor = "white";
+  });
+
+  document.getElementById("result").innerText = "";
+  document.getElementById("result").style.backgroundColor = "white";
+  document.getElementById("result").style.color = "black";
+  document.getElementById("error").innerText = "";
+  document.getElementById("validationError").innerText = "";
+
+
+  return missingFields;
 }
