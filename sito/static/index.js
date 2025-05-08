@@ -440,7 +440,7 @@ const setPredictionLogicBE = async () => {
 
   resultDiv.style.backgroundColor = `${result.backgroundColor}`;
 
-  if (parseFloat(result.prediction) <= 0.25 || parseFloat(result.prediction) >= 0.75) {
+  if (parseFloat(result.prediction) <= 25 || parseFloat(result.prediction) >= 75) {
     resultDiv.style.color = 'white';
   } else {
     resultDiv.style.color = 'black';
