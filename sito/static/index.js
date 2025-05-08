@@ -482,7 +482,7 @@ window.onload = () => {
   document.getElementById("result").style.color = "black";
   document.getElementById("error").innerText = "";
   document.getElementById("validationError").innerText = "";
-};
+
 
   return missingFields;
 }
