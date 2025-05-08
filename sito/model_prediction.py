@@ -35,9 +35,9 @@ def predict_input(data):
   else:
     df = parse_NB_input(data)
 
-  clf_prediction = clf.predict_proba(df)[:, 1][0]
+  clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
   
-  color = get_color(float("{:.2f}".format(clf_prediction)))
+  color = get_color(float("{:.2f}".format(clf_prediction /100)))
   
   print(f"model: {data['model']}")
   print("%.2f" % clf_prediction)
