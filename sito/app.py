@@ -24,6 +24,12 @@ def index():
 def home():
     return "✅ Server Flask attivo su PythonAnywhere!"
 
+@app.route("/prediction")
+def show_prediction():
+    print("now at prediction")
+    return render_template("prediction.html")
+
+
 # Route per salvare i dati nel file Excel
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
@@ -96,8 +102,8 @@ def model_predict():
     try :
         result, color = predict_input(data)
         
-        data['prediction'] = f"{result}% Malignant"
-        salva_diagnosi()
+        #data['prediction'] = f"{result}% Malignant"
+        #salva_diagnosi()
         
         return jsonify({
             "message": f"case Predicted and Saved Succesfully!",

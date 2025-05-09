@@ -1,6 +1,8 @@
 let currModel = "DT"
 
 document.addEventListener('DOMContentLoaded', function () {
+  localStorage.setItem("model", "DT")
+
   document
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
@@ -16,23 +18,24 @@ document.addEventListener('DOMContentLoaded', function () {
     addEventListenersForModelButtons(model, models);
 	
   });
-  document.getElementById("inputForm DT").reset();
+  document.getElementById("inputForm").reset();
 });
 
 const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
+
     document.getElementById(model).style.backgroundColor = "#007bff"
     document.getElementById(model).style.color = "white"
 	
-	currModel = model
+	  currModel = model
 
     setMandatoryFeatures(model)
 	
-	//Ripristina il colore di sfondo di tutti i campi
-	allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
-	  const el = document.getElementById(id);
-	  el.style.backgroundColor = "white";
-	});
+    //Ripristina il colore di sfondo di tutti i campi
+    allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
+      const el = document.getElementById(id);
+      el.style.backgroundColor = "white";
+    });
 
     models.map(innerModel => {
       if (innerModel !== model) {
@@ -42,16 +45,14 @@ const addEventListenersForModelButtons = (model, models) => {
       }
     });
 	
-	  //Reset risultati e messaggi
-  document.getElementById("result").innerText = "";
-  document.getElementById("result").style.backgroundColor = "white";
-  document.getElementById("result").style.color = "black";
-  document.getElementById("error").innerText = "";
-  document.getElementById("validationError").innerText = "";
-	});
+    //Reset risultati e messaggi
+    document.getElementById("error").innerText = "";
+    document.getElementById("validationError").innerText = "";
+  });
 }
 
 const setMandatoryFeatures = (model) => {
+
   if (model === "DT") {
     setMandatoryFeaturesDT()
   } else if (model === "NB") {
@@ -195,25 +196,25 @@ const predictClass = () => {
 
 const parseFormData = (result) => {
   return {
-	model: currModel,
-	datetime: new Date().toISOString(),
-	age: parseInt(document.getElementById('Age').value),
-	sex: parseInt(document.getElementById('Sex').value),
-	Dim1: parseInt(document.getElementById('Dim1').value),
-  Dim2: parseInt(document.getElementById('Dim2').value),
-	Veins: parseInt(document.getElementById('Veins').value),
-  Arteries: parseInt(document.getElementById('Arteries').value),   
-  DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
-  VesselCompression: parseInt(document.getElementById('VesselCompression').value),
-  Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
-  Margins: parseInt(document.getElementById('Margins').value),
-  Ecostructure: parseInt(document.getElementById('Ecostructure').value),
-  Multiple: parseInt(document.getElementById('Multiple').value),
-  HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
-	ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
-	prediction: result,
-    
-    
+    model: currModel,
+    datetime: new Date().toISOString(),
+    age: parseInt(document.getElementById('Age').value),
+    sex: parseInt(document.getElementById('Sex').value),
+    Dim1: parseInt(document.getElementById('Dim1').value),
+    Dim2: parseInt(document.getElementById('Dim2').value),
+    Veins: parseInt(document.getElementById('Veins').value),
+    Arteries: parseInt(document.getElementById('Arteries').value),   
+    DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
+    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
+    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
+    Margins: parseInt(document.getElementById('Margins').value),
+    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
+    Multiple: parseInt(document.getElementById('Multiple').value),
+    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+    ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
+    prediction: result,
+      
+      
   };
 }
 
@@ -258,15 +259,7 @@ const setPredictionLogicFE = async () => {
 
   const errorDiv = document.getElementById('error');
 
-  const resultDiv = document.getElementById('result');
-
   errorDiv.innerText = '';
-
-  resultDiv.innerText = '';
-
-  resultDiv.style.backgroundColor = '';
-
-  resultDiv.style.color = '';
 
 
 
@@ -392,13 +385,8 @@ const setPredictionLogicFE = async () => {
 
   }
 
+  localStorage.setItem("model", currModel);
 
-  resultDiv.innerText = `:: ${result} ::`;
-
-  resultDiv.style.color = textColor; // Applica il colore del testo
-
-  resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
-  // Dopo aver calcolato il risultato, raccogli i dati:
   const formData = parseFormData(result)
     
   // Ottieni l’IP pubblico
@@ -410,7 +398,14 @@ const setPredictionLogicFE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  sendToServer(formData);
+  //sendToServer(formData);
+
+  localStorage.setItem("prediction", `:: ${result} ::`);
+  localStorage.setItem("predictionBackgroundColor", boxColor);
+  localStorage.setItem("predictionColor", textColor);
+
+  window.location.href = "/prediction"
+
 }
 
 const setPredictionLogicBE = async () => {
@@ -426,27 +421,23 @@ const setPredictionLogicBE = async () => {
 
   result = await predictFromServer(formData);
 
-	
+  localStorage.setItem("model", currModel);
+
+  localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
+  localStorage.setItem("predictionBackgroundColor", result.backgroundColor);
+  if (parseFloat(result.prediction) <= 25 || parseFloat(result.prediction) >= 75) {
+    localStorage.setItem("predictionColor", "white");
+  } else {
+    localStorage.setItem("predictionColor", "black");
+  }
 
   console.log(result.prediction);
 
+  window.location.href = "/prediction"
+
   const errorDiv = document.getElementById('error');
 
-  const resultDiv = document.getElementById('result');
-
   errorDiv.innerText = '';
-
-  resultDiv.innerText = '';
-
-  resultDiv.style.backgroundColor = `${result.backgroundColor}`;
-
-  if (parseFloat(result.prediction) <= 25 || parseFloat(result.prediction) >= 75) {
-    resultDiv.style.color = 'white';
-  } else {
-    resultDiv.style.color = 'black';
-  }
-
-  resultDiv.innerText = `:: ${result.prediction}% Malignant ::`;
 }
 
 window.onload = () => {
@@ -465,9 +456,6 @@ window.onload = () => {
     el.style.backgroundColor = "white";
   });
 
-  document.getElementById("result").innerText = "";
-  document.getElementById("result").style.backgroundColor = "white";
-  document.getElementById("result").style.color = "black";
   document.getElementById("error").innerText = "";
   document.getElementById("validationError").innerText = "";
 

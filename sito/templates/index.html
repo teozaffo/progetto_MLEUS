@@ -98,32 +98,6 @@
 
     }
 
-    .result {
-
-      margin-top: 2rem; /* Stacca la casella dal bottone */
-
-      padding: 1.5rem; /* Aggiunge più spazio interno alla casella */
-
-      border-radius: 8px; /* Arrotonda gli angoli */
-
-      text-align: center; /* Centra il testo orizzontalmente */
-
-      font-size: 1.5rem; /* Ingrossa il testo */
-
-      font-weight: bold; /* Rende il testo più marcato */
-
-      display: flex; /* Per centrare il testo verticalmente */
-
-      align-items: center; /* Centra il testo verticalmente */
-
-      justify-content: center; /* Centra il testo orizzontalmente */
-
-      width: 100%; /* Rende la casella larga quanto il pulsante */
-
-      box-sizing: border-box; /* Include padding e bordo nella larghezza */
-
-    }
-
     .error {
 
       color: red;
@@ -134,94 +108,94 @@
 
     }
 
-	.form-row {
+    .form-row {
 
-	display: flex;
+      display: flex;
 
-	justify-content: space-between;
+      justify-content: space-between;
 
-	align-items: center;
+      align-items: center;
 
-	margin-top: 1rem;
+      margin-top: 1rem;
 
-	}
+    }
 
 
 
-	.form-row label {
+    .form-row label {
 
-	flex: 1;
+      flex: 1;
 
-	}
+    }
 
-  .form-row select {
+    .form-row select {
+      
+      width: 20%;
+
+    }
+
+    .form-row input {
+      
+      width: 17%;
+
+    }
     
-    width: 20%;
+    .btn-group {
 
-  }
+      display: flex;
 
-  .form-row input {
-    
-    width: 17%;
+      flex-direction: row;
 
-  }
-  
-  .btn-group {
+      justify-content: center;
 
-    display: flex;
+    }
 
-    flex-direction: row;
+    .model-btn {
+      border: solid 2px #000;
+      background-color: white;
+      color: black;
+      padding: 10px 24px;
+      font-size: 15px;
+      cursor: pointer;
+      border-color:#007bff;
+      margin-top: 0cm;
+    }
 
-    justify-content: center;
+    .model-btn:hover {
+      color: #ffffff;
+      background-color: #007bff;
+      border-color: #007bff;
+    }
 
-  }
+    .mandatory {
 
-  .model-btn {
-    border: solid 2px #000;
-    background-color: white;
-    color: black;
-    padding: 10px 24px;
-    font-size: 15px;
-    cursor: pointer;
-    border-color:#007bff;
-    margin-top: 0cm;
-  }
+      padding: 0.5rem;
 
-  .model-btn:hover {
-    color: #ffffff;
-    background-color: #007bff;
-    border-color: #007bff;
-  }
+      margin-left: 1rem;
 
-  .mandatory {
+      border: 2px solid red;
 
-    padding: 0.5rem;
+      border-radius: 4px;
+    }
 
-    margin-left: 1rem;
+    .optional {
 
-    border: 2px solid red;
+      padding: 0.5rem;
 
-    border-radius: 4px;
-  }
+      margin-left: 1rem;
 
-  .optional {
+      border: 2px solid #ccc;
 
-    padding: 0.5rem;
+      border-radius: 4px;
+    }
 
-    margin-left: 1rem;
+    .information {
+      
+      font-weight: bold;
+      
+      color: red;
 
-    border: 2px solid #ccc;
-
-    border-radius: 4px;
-  }
-
-  .information {
-    
-    font-weight: bold;
-    
-    color: red;
-
-  }
+    }
 
   </style>
 
@@ -243,7 +217,7 @@
       <button class="model-btn" id="LR">Specific (LR)</button>
     </div>
 
-<form id="inputForm DT" autocomplete="off">
+<form id="inputForm" autocomplete="off">
 
   <div class="form-row">
 
@@ -427,8 +401,6 @@
 
 
 </form>
-
-    <div class="result" id="result"></div>
 
     <div class="error" id="error"></div>
 
