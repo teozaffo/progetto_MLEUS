@@ -170,7 +170,7 @@
         Please give us your feedback:
       </h2>
       
-      <form class="feedback">
+      <form class="feedback" id="feedback">
         <label>
           1. On a scale from 1 (not at all) to 4 (completely), how reliable do you consider this information?
         </label><br>
@@ -178,7 +178,7 @@
           <label>not at all <input type="radio" name="reliability" value="1"></label>
           <label><input type="radio" name="reliability" value="2"></label>
           <label><input type="radio" name="reliability" value="3"></label>
-          <label><input type="radio" name="reliability" value="4">completely</label>
+          <label><input type="radio" name="reliability" value="4"> completely</label>
         </div><br>
 
         <label>
@@ -188,7 +188,7 @@
           <label>not at all <input type="radio" name="usefulness" value="1"></label>
           <label><input type="radio" name="usefulness" value="2"></label>
           <label><input type="radio" name="usefulness" value="3"></label>
-          <label><input type="radio" name="usefulness" value="4">completely</label>
+          <label><input type="radio" name="usefulness" value="4"> completely</label>
         </div><br>
 
         <label>
@@ -198,7 +198,7 @@
           <label>not at all <input type="radio" name="influence" value="1"></label>
           <label><input type="radio" name="influence" value="2"></label>
           <label><input type="radio" name="influence" value="3"></label>
-          <label><input type="radio" name="influence" value="4">completely</label>
+          <label><input type="radio" name="influence" value="4"> completely</label>
         </div><br>
 
         <div class="form-row">
@@ -223,8 +223,8 @@
           </select>
         </div>
 
-        <label>5. Why?</label><br>
-        <textarea name="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
+        <label for="reason">5. Why?</label><br>
+        <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
 
         <button id="form-submit" type="submit">Send</button>
       </form>
