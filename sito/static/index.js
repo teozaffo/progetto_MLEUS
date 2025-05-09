@@ -176,7 +176,7 @@ const predictClass = () => {
 
   if (missing.length > 0) {
 	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-	validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
+	validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
 
 	// Evidenzia i campi mancanti
 	missing.forEach(id => {
@@ -200,20 +200,18 @@ const parseFormData = (result) => {
 	age: parseInt(document.getElementById('Age').value),
 	sex: parseInt(document.getElementById('Sex').value),
 	Dim1: parseInt(document.getElementById('Dim1').value),
-  Dim2: parseInt(document.getElementById('Dim2').value),
+    Dim2: parseInt(document.getElementById('Dim2').value),
 	Veins: parseInt(document.getElementById('Veins').value),
-  Arteries: parseInt(document.getElementById('Arteries').value),   
-  DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
-  VesselCompression: parseInt(document.getElementById('VesselCompression').value),
-  Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
-  Margins: parseInt(document.getElementById('Margins').value),
-  Ecostructure: parseInt(document.getElementById('Ecostructure').value),
-  Multiple: parseInt(document.getElementById('Multiple').value),
-  HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+    Arteries: parseInt(document.getElementById('Arteries').value),   
+    DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
+    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
+    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
+    Margins: parseInt(document.getElementById('Margins').value),
+    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
+    Multiple: parseInt(document.getElementById('Multiple').value),
+    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
 	ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
 	prediction: result,
-    
-    
   };
 }
 
@@ -392,14 +390,10 @@ const setPredictionLogicFE = async () => {
 
   }
 
-
-  resultDiv.innerText = `:: ${result} ::`;
-
-  resultDiv.style.color = textColor; // Applica il colore del testo
-
-  resultDiv.style.backgroundColor = boxColor; // Applica il colore di sfondo
+ 
   // Dopo aver calcolato il risultato, raccogli i dati:
-  const formData = parseFormData(result)
+  const formData = parseFormData(result);
+  localStorage.setItem("datetime", formData.datetime);
     
   // Ottieni l’IP pubblico
   try {
@@ -410,11 +404,21 @@ const setPredictionLogicFE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  sendToServer(formData);
+  await sendToServer(formData);
+  
+  //Salva per prediction.html
+  localStorage.setItem("prediction", `:: ${result} ::`);
+  localStorage.setItem("predictionColor", textColor);
+  localStorage.setItem("predictionBackgroundColor", boxColor);
+  localStorage.setItem("model", currModel);
+
+  //Vai al questionario
+  window.location.href = "/prediction";
 }
 
 const setPredictionLogicBE = async () => {
-  const formData = parseFormData()
+  const formData = parseFormData();
+  localStorage.setItem("datetime", formData.datetime);
 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
@@ -424,30 +428,25 @@ const setPredictionLogicBE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  result = await predictFromServer(formData);
+  const result = await predictFromServer(formData);
 
-	
-
-  console.log(result.prediction);
-
-  const errorDiv = document.getElementById('error');
-
-  const resultDiv = document.getElementById('result');
-
-  errorDiv.innerText = '';
-
-  resultDiv.innerText = '';
-
-  resultDiv.style.backgroundColor = `${result.backgroundColor}`;
-
-  if (parseFloat(result.prediction) <= 25 || parseFloat(result.prediction) >= 75) {
-    resultDiv.style.color = 'white';
-  } else {
-    resultDiv.style.color = 'black';
+  if (!result || !result.prediction) {
+    console.error("Errore: nessuna previsione ricevuta dal server.");
+    return;
   }
 
-  resultDiv.innerText = `:: ${result.prediction}% Malignant ::`;
-}
+  const percent = Math.round(parseFloat(result.prediction));
+  formData.prediction = `${percent}% Malignant`;
+  await sendToServer(formData);
+  localStorage.setItem("prediction", `:: ${percent}% Malignant ::`);
+  localStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
+  localStorage.setItem("predictionBackgroundColor", result.backgroundColor || "#f0f0f0");
+  localStorage.setItem("model", currModel);
+
+  // Redirect solo dopo salvataggio dati
+  window.location.href = "/prediction";
+};
+
 
 window.onload = () => {
   // Pulisce tutti i campi di input e select
