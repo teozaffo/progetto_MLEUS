@@ -1,9 +1,12 @@
 # app.py
+from openpyxl import load_workbook
+import pytz
 from flexible_scaler import FlexibleScaler
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pandas as pd
 import os
+import json
 from datetime import datetime
 from model_prediction import predict_input
 
@@ -34,8 +37,8 @@ def salva_diagnosi():
         "Model": data.get("model", "unknown"),
         "Hospital Center": data.get("HospitalCenter", ""),
         "Protocol Code": data.get("ProtocolCode", ""),
-        "Age": data.get("Age"),
-        "Sex": data.get("Sex"),
+        "Age": data.get("age"),
+        "Sex": data.get("sex"),
         "Max Dim": data.get("Dim1"),
         "Min Dim": data.get("Dim2"),
         "Veinous Inf": data.get("Veins"),
@@ -91,10 +94,14 @@ def salva_diagnosi():
 def model_predict():
     data = request.get_json()
     try :
-        lr_result, color = predict_input(data)
+        result, color = predict_input(data)
+        
+        data['prediction'] = f"{result}% Malignant"
+        salva_diagnosi()
+        
         return jsonify({
-            "message": "case Predicted Succesfully!",
-            "prediction": str(lr_result),
+            "message": f"case Predicted and Saved Succesfully!",
+            "prediction": str(result),
             "backgroundColor": color
         }) 
     except Exception as e:
