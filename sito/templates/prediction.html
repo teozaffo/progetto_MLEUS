@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
+
+    <style>
+      body {
+
+        font-family: Arial, sans-serif;
+
+        background: #f8f9fa;
+
+        margin: 0;
+
+        padding: 2rem;
+
+      }
+
+      
+      .container {
+
+        max-width: 600px;
+
+        margin: auto;
+
+        background: #ffffff;
+
+        padding: 2rem;
+
+        border-radius: 8px;
+
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+      }
+
+      h2 {
+
+        text-align: center;
+
+        margin-bottom: 1.5rem;
+
+      }
+
+      .result {
+
+        margin-top: 2rem; /* Stacca la casella dal bottone */
+
+        padding: 1.5rem; /* Aggiunge più spazio interno alla casella */
+
+        border-radius: 8px; /* Arrotonda gli angoli */
+
+        text-align: center; /* Centra il testo orizzontalmente */
+
+        font-size: 1.5rem; /* Ingrossa il testo */
+
+        font-weight: bold; /* Rende il testo più marcato */
+
+        display: flex; /* Per centrare il testo verticalmente */
+
+        align-items: center; /* Centra il testo verticalmente */
+
+        justify-content: center; /* Centra il testo orizzontalmente */
+
+        width: 100%; /* Rende la casella larga quanto il pulsante */
+
+        box-sizing: border-box; /* Include padding e bordo nella larghezza */
+
+      }
+
+      .radio-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .form-row {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-top: 1rem;
+
+      }
+
+      .form-row label {
+
+        flex: 1;
+
+      }
+
+      .form-row select {
+
+        width: 20%;
+
+      }
+
+      label {
+
+        display: block;
+
+        margin-top: 1rem;
+
+      }
+
+      .optional {
+        padding: 0.5rem;
+
+        margin-left: 1rem;
+
+        border: 2px solid #ccc;
+
+        border-radius: 4px;
+      }
+
+      form.feedback {
+        padding-left: 2rem;
+        padding-bottom: 2rem;
+        padding-right: 2rem;
+      }
+
+      h2.feedback {
+        text-align: left;
+      }
+
+      #form-submit {
+        
+        margin-top: 1.5rem;
+
+        padding: 0.75rem;
+
+        width: 20%;
+
+        background-color: #007bff;
+
+        border: none;
+
+        color: white;
+
+        font-size: 1rem;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+      }
+	  
+	  #back-button {
+        
+        margin-top: 1.5rem;
+
+        padding: 0.75rem;
+
+        width: 20%;
+
+        background-color: white;
+
+        border: 1px solid black;
+
+        color: black;
+
+        font-size: 1rem;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+      }
+
+      #form-submit:hover {
+        background-color: #0056b3;
+      }
+    </style>
+
+    
+
+  </head>
+  <body>
+
+    <div class="container">
+      <h2>Prediction of the model</h2>
+      <h3 id="selected-model">Selected Model: </h3>
+
+      <div class="result" id="result"></div>
+      <br>
+
+      <h2 class="feedback">
+        Please give us your feedback:
+      </h2>
+      
+      <form class="feedback" id="feedback">
+        <label>
+          1. On a scale from 1 (not at all) to 4 (completely), how reliable do you consider this information?
+        </label><br>
+        <div class="radio-row">
+          <label>not at all <input type="radio" name="reliability" value="1"></label>
+          <label><input type="radio" name="reliability" value="2"></label>
+          <label><input type="radio" name="reliability" value="3"></label>
+          <label><input type="radio" name="reliability" value="4"> completely</label>
+        </div><br>
+
+        <label>
+          2. On a scale from 1 (not at all) to 4 (completely), how useful do you find this tool?
+        </label><br>
+        <div class="radio-row">
+          <label>not at all <input type="radio" name="usefulness" value="1"></label>
+          <label><input type="radio" name="usefulness" value="2"></label>
+          <label><input type="radio" name="usefulness" value="3"></label>
+          <label><input type="radio" name="usefulness" value="4"> completely</label>
+        </div><br>
+
+        <label>
+          3. On a scale from 1 (not at all) to 4 (completely), to what extent do you think this information will influence your upcoming decisions regarding reporting and prescribing?
+        </label><br>
+        <div class="radio-row">
+          <label>not at all <input type="radio" name="influence" value="1"></label>
+          <label><input type="radio" name="influence" value="2"></label>
+          <label><input type="radio" name="influence" value="3"></label>
+          <label><input type="radio" name="influence" value="4"> completely</label>
+        </div><br>
+
+        <div class="form-row">
+          <label for="recommendability">
+            4. On a scale from 0 (impossible) to 10 (certain), how likely are you to recommend this tool to a colleague?
+          </label>
+
+          <select id="recommendability" class="optional">
+      
+            <option value="0">0 (Impossible)</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>            
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10 (Certain)</option>
+      
+          </select>
+        </div>
+
+        <label for="reason">5. Why?</label><br>
+        <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
+
+        <button id="form-submit" type="submit">Send</button>
+		<button id="back-button" type="button">Back</button>
+      </form>
+
+    </div>
+	
+	<script>
+//		document.getElementById("back-button").addEventListener("click", () => {
+//			window.location.href = "/";
+//		});
+	</script>
+	
+	<script type="text/javascript" src="../static/prediction.js"></script>
+
+  </body>
+</html>
