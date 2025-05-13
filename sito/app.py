@@ -1,4 +1,6 @@
 # app.py
+from openpyxl import load_workbook
+import pytz
 from flexible_scaler import FlexibleScaler
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
@@ -33,6 +35,12 @@ def prediction():
     return render_template("prediction.html")
 
 
+@app.route("/prediction")
+def show_prediction():
+    print("now at prediction")
+    return render_template("prediction.html")
+
+
 # Route per salvare i dati nel file Excel
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
@@ -46,8 +54,8 @@ def salva_diagnosi():
         "Model": data.get("model", "unknown"),
         "Hospital Center": data.get("HospitalCenter", ""),
         "Protocol Code": data.get("ProtocolCode", ""),
-        "Age": data.get("Age"),
-        "Sex": data.get("Sex"),
+        "Age": data.get("age"),
+        "Sex": data.get("sex"),
         "Max Dim": data.get("Dim1"),
         "Min Dim": data.get("Dim2"),
         "Veinous Inf": data.get("Veins"),
