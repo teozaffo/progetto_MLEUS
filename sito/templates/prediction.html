@@ -148,6 +148,27 @@
 
         cursor: pointer;
       }
+      
+      #back-button {
+        
+        margin-top: 1.5rem;
+
+        padding: 0.75rem;
+
+        width: 20%;
+
+        background-color: white;
+
+        border: 1px solid black;
+
+        color: black;
+
+        font-size: 1rem;
+
+        border-radius: 4px;
+
+        cursor: pointer;
+      }
 
       #form-submit:hover {
         background-color: #0056b3;
@@ -190,6 +211,7 @@
 
     <script type="text/javascript" src="../static/prediction.js"></script>
 
+
   </head>
   <body>
 
@@ -204,6 +226,7 @@
         <div id="gradient-legend-uncertain">Uncertain</div>
         <div id="gradient-legend-malignant">Malignant</div>
       </div>
+      
       <br>
 
       <h2 class="feedback">
@@ -267,9 +290,9 @@
         <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
 
         <button id="form-submit" type="submit">Send</button>
+		    <button id="back-button" type="button">Back</button>
       </form>
 
     </div>
-
   </body>
 </html>
