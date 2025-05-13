@@ -102,8 +102,8 @@ def model_predict():
     try :
         result, color = predict_input(data)
         
-        #data['prediction'] = f"{result}% Malignant"
-        #salva_diagnosi()
+        data['prediction'] = f"{result}% Malignant"
+        salva_diagnosi()
         
         return jsonify({
             "message": f"case Predicted and Saved Succesfully!",
