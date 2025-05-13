@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
 
-  document.getElementById("inputForm").style.display = "none"
+  document.getElementById("inputForm").hidden = true
 
   const models = ["DT", "NB", "LR"];
 
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
-    document.getElementById("inputForm").style.display = ""
+    document.getElementById("inputForm").hidden = false
 
     document.getElementById(model).style.backgroundColor = "#007bff"
     document.getElementById(model).style.color = "white"
@@ -255,6 +255,8 @@ const setPredictionLogicBE = async () => {
     return;
   }
   
+  percent = result.prediction
+
   percent = result.prediction
 
   localStorage.setItem("model", currModel);
