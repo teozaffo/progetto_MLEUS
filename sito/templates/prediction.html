@@ -152,6 +152,40 @@
       #form-submit:hover {
         background-color: #0056b3;
       }
+
+      #gradient-bar {
+        width: 50%;
+        height: 15px;
+        background: linear-gradient(to right, #000099, #ffffff, #990000);
+        position: relative;
+        border: 1px solid #000;
+        margin-top: 10px;
+      }
+
+      #gradient-legend-benign {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        font-size: 10px;
+        margin-top: 2px;
+      }
+
+      #gradient-legend-uncertain {
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        margin-top: 2px;
+      }
+
+      #gradient-legend-malignant {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        font-size: 10px;
+        margin-top: 2px;
+      }
     </style>
 
     <script type="text/javascript" src="../static/prediction.js"></script>
@@ -164,6 +198,12 @@
       <h3 id="selected-model">Selected Model: </h3>
 
       <div class="result" id="result"></div>
+
+      <div id="gradient-bar">
+        <div id="gradient-legend-benign">Benign</div>
+        <div id="gradient-legend-uncertain">Uncertain</div>
+        <div id="gradient-legend-malignant">Malignant</div>
+      </div>
       <br>
 
       <h2 class="feedback">

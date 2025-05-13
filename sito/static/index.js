@@ -1,18 +1,13 @@
-let currModel = "DT"
+let currModel = ""
 
 document.addEventListener('DOMContentLoaded', function () {
-  localStorage.setItem("model", "DT")
-
   document
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
 
+  document.getElementById("inputForm").style.display = "none"
+
   const models = ["DT", "NB", "LR"];
-
-  document.getElementById("DT").style.backgroundColor = "#007bff";
-  document.getElementById("DT").style.color = "white";
-
-  setMandatoryFeaturesDT();
 
   models.forEach(model => {
     addEventListenersForModelButtons(model, models);
@@ -23,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
+    document.getElementById("inputForm").style.display = ""
 
     document.getElementById(model).style.backgroundColor = "#007bff"
     document.getElementById(model).style.color = "white"
@@ -74,7 +70,9 @@ const allFeatures = [
   'VesselCompression', 
   'Ecostructure', 
   'Margins', 
-  'Multiple'
+  'Multiple',
+  'HospitalCenter',
+  'ProtocolCode'
 ]
 
 const setMandatoryFeaturesDT = () => {
@@ -83,16 +81,16 @@ const setMandatoryFeaturesDT = () => {
     'DuctRetrodilatation', 
     'VesselCompression', 
     'Ecostructure', 
-    'Margins'
+    'Margins',
+    'HospitalCenter',
+    'ProtocolCode'
   ]
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesDT.includes(feature)) {
-      document.getElementById(feature).classList.remove('optional')
-      document.getElementById(feature).classList.add('mandatory')
+      document.getElementById(`${feature}-row`).style.display = ""
     } else {
-      document.getElementById(feature).classList.remove('mandatory')
-      document.getElementById(feature).classList.add('optional')
+      document.getElementById(`${feature}-row`).style.display = "none"
     }
   })
   
@@ -107,22 +105,22 @@ const setMandatoryFeaturesNB = () => {
     'DuctRetrodilatation', 
     'VesselCompression', 
     'Ecostructure', 
-    'Margins'
+    'Margins',  
+    'HospitalCenter',
+    'ProtocolCode'
   ]
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesNB.includes(feature)) {
-      document.getElementById(feature).classList.remove('optional')
-      document.getElementById(feature).classList.add('mandatory')
+      document.getElementById(`${feature}-row`).style.display = ""
     } else {
-      document.getElementById(feature).classList.remove('mandatory')
-      document.getElementById(feature).classList.add('optional')
+      document.getElementById(`${feature}-row`).style.display = "none"
     }
   })
 }
 
 const setMandatoryFeaturesLR = () => {
-  const mandatoryFeaturesNB = [
+  const mandatoryFeaturesLR = [
     'Age',
     'Dim1', 
     'Dim2', 
@@ -132,16 +130,16 @@ const setMandatoryFeaturesLR = () => {
     'VesselCompression', 
     'Ecostructure', 
     'Margins', 
-    'Multiple'
+    'Multiple',  
+    'HospitalCenter',
+    'ProtocolCode'
   ]
 
   allFeatures.map(feature => {
-    if (mandatoryFeaturesNB.includes(feature)) {
-      document.getElementById(feature).classList.remove('optional')
-      document.getElementById(feature).classList.add('mandatory')
+    if (mandatoryFeaturesLR.includes(feature)) {
+      document.getElementById(`${feature}-row`).style.display = ""
     } else {
-      document.getElementById(feature).classList.remove('mandatory')
-      document.getElementById(feature).classList.add('optional')
+      document.getElementById(`${feature}-row`).style.display = "none"
     }
   })
 }
@@ -185,13 +183,9 @@ const predictClass = () => {
 	});
 
 	return;
-  }	
-
-  if (currModel === "DT") {
-    setPredictionLogicFE()
-  } else {
-    setPredictionLogicBE()
   }
+  
+  setPredictionLogicBE()
 }
 
 const parseFormData = (result) => {
@@ -242,170 +236,6 @@ const sendToServer = async (data) => {
   } catch (error) {
     console.error("Errore nell'invio al server:", error);
   }
-}
-
-const setPredictionLogicFE = async () => {
-  const D = parseInt(document.getElementById('DuctRetrodilatation').value);
-
-  const V = parseInt(document.getElementById('VesselCompression').value);
-
-  const L = parseInt(document.getElementById('Lymphadenopathy').value);
-
-  const M = parseInt(document.getElementById('Margins').value);
-
-  const E = parseInt(document.getElementById('Ecostructure').value);
-
-
-
-  const errorDiv = document.getElementById('error');
-
-  errorDiv.innerText = '';
-
-
-
-  if ([D, V, L, M, E].some(v => isNaN(v))) {
-
-    errorDiv.innerText = 'Please enter valid numeric values for all fields using dot (.) as decimal separator.';
-
-    return;
-
-  }
-
-
-
-  let result = 'uncertain case';
-
-  let color = 'black';
-
-  let boxColor = 'white';
-
-
-
-  // Define all conditions as rule blocks
-
-  const rules = [
-
-    { c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-    { c: () => D === 0 && V === 0 && L === 0 && M === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-    { c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-    { c: () => D === 0 && V === 0 && L === 0 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-
-
-    { c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
-
-    { c: () => D === 0 && V === 0 && L === 1 && M === 0 && E === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-    { c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-    { c: () => D === 0 && V === 0 && L === 1 && M === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-
-
-    { c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFE6E6' },
-
-    { c: () => D === 0 && V === 1 && M === 0 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#E6E6FF' },
-
-    { c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-    { c: () => D === 0 && V === 1 && M === 0 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-
-
-    { c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-    { c: () => D === 0 && V === 1 && M === 1 && L === 0 && E === 1, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-    { c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 0, r: 'Likely NOT Malignant', textColor: 'white', boxColor: '#000096' },
-
-    { c: () => D === 0 && V === 1 && M === 1 && L === 1 && E === 1, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#8282FF' },
-
-
-
-    { c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-    { c: () => D === 1 && M === 0 && E === 0 && L === 0 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
-
-    { c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'white', boxColor: '#960000' },
-
-    { c: () => D === 1 && M === 0 && E === 0 && L === 1 && V === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#DC4646' },
-
-
-
-    { c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
-
-    { c: () => D === 1 && M === 0 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-    { c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-    { c: () => D === 1 && M === 0 && E === 1 && V === 1 && L === 1, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-
-
-    { c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 0, r: 'Likely NOT Malignant', textColor: 'black', boxColor: '#B4B4FF' },
-
-    { c: () => D === 1 && M === 1 && E === 0 && L === 0 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-    { c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FFB4B4' },
-
-    { c: () => D === 1 && M === 1 && E === 0 && L === 1 && V === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-
-
-    { c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 0, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-    { c: () => D === 1 && M === 1 && E === 1 && V === 0 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-    { c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 0, r: 'Likely Malignant', textColor: 'black', boxColor: '#FF8282' },
-
-    { c: () => D === 1 && M === 1 && E === 1 && V === 1 && L === 1, r: 'uncertain case', textColor: 'black', boxColor: '#F2F2F2' },
-
-
-
-  ];
-
-
-
-  for (let rule of rules) {
-
-    if (rule.c()) {
-
-      result = rule.r;
-
-      textColor = rule.textColor; // Recupera il colore del testo dalla regola
-
-      boxColor = rule.boxColor;   // Recupera il colore di sfondo dalla regola
-
-      break;
-
-    }
-
-  }
-
-  localStorage.setItem("model", currModel);
-
-  const formData = parseFormData(result)
-    
-  // Ottieni l’IP pubblico
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    formData.ip = data.ip;
-  } catch (e) {
-    formData.ip = "IP non disponibile";
-  }
-
-  //sendToServer(formData);
-
-  localStorage.setItem("prediction", `:: ${result} ::`);
-  localStorage.setItem("predictionBackgroundColor", boxColor);
-  localStorage.setItem("predictionColor", textColor);
-
-  window.location.href = "/prediction"
-
 }
 
 const setPredictionLogicBE = async () => {

@@ -21,29 +21,38 @@ def get_color(ratio):
     
     if ratio > 0.5:  # more positives -> red blend
         strength = (ratio - 0.5) * 2
-        return blend_color((235, 0, 0), strength)
+        return blend_color((255, 0, 0), strength)
     else:  # more negatives -> blue blend
         strength = (0.5 - ratio) * 2
         return blend_color((0, 0, 255), strength)
 
 def predict_input(data):
-  with open(f"./sito/{data['model']}.joblib", 'rb') as f:
-    clf = joblib.load(f)
-  
-  if data['model'] == "LR":
-    df = parse_LR_input(data)
-  else:
-    df = parse_NB_input(data)
+  try :
+    with open(f"./sito/{data['model']}.joblib", 'rb') as f:
+      clf = joblib.load(f)
+    
+    if data['model'] == "LR":
+      df = parse_LR_input(data)
+    elif data['model'] == "NB":
+      df = parse_NB_input(data)
+    elif data['model'] == "DT":
+      df = parse_DT_input(data)
+    else:
+      raise Exception("Invalid Input Model, must be DT, NB or LR")
 
-  clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
+    clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
+    
+    color = get_color(float("{:.2f}".format(clf_prediction /100)))
+    
+    print(f"model: {data['model']}")
+    print("%.2f" % clf_prediction)
+    print("----------")
+    
+    return "%.2f" % clf_prediction, color
   
-  color = get_color(float("{:.2f}".format(clf_prediction /100)))
-  
-  print(f"model: {data['model']}")
-  print("%.2f" % clf_prediction)
-  print("----------")
-  
-  return "%.2f" % clf_prediction, color
+  except Exception as e:
+    print("Invalid Input Model, must be DT, NB or LR")
+    raise Exception("Invalid Input Model, must be DT, NB or LR")
 
 def parse_LR_input(data):
   df = pd.DataFrame({
@@ -69,6 +78,24 @@ def parse_NB_input(data):
     'sex': data['sex'] if data['sex'] is not None else np.nan,
     'Dim1': data['Dim1'],
     'Dim2': data['Dim2'],
+    'Lymphadenopathy': data['Lymphadenopathy'],
+    'DuctRetrodilation': data['DuctRetrodilatation'],
+    'Arteries': data['Arteries'] if data['Arteries'] is not None else np.nan,
+    'Veins': data['Veins'] if data['Veins'] is not None else np.nan,
+    'VesselCompression': data['VesselCompression'],
+    'Ecostructure': data['Ecostructure'],
+    'Margins': data['Margins'],
+    'Multiple': data['Multiple'] if data['Multiple'] is not None else np.nan
+  }, index=[0])
+  
+  return df
+
+def parse_DT_input(data):
+  df = pd.DataFrame({
+    'age': data['age'] if data['age'] is not None else np.nan,
+    'sex': data['sex'] if data['sex'] is not None else np.nan,
+    'Dim1': data['Dim1'] if data['Dim1'] is not None else np.nan,
+    'Dim2': data['Dim2'] if data['Dim2'] is not None else np.nan,
     'Lymphadenopathy': data['Lymphadenopathy'],
     'DuctRetrodilation': data['DuctRetrodilatation'],
     'Arteries': data['Arteries'] if data['Arteries'] is not None else np.nan,

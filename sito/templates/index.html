@@ -129,12 +129,28 @@
     }
 
     .form-row select {
+
+      padding: 0.5rem;
+
+      margin-left: 1rem;
+
+      border: 2px solid #ccc;
+
+      border-radius: 4px;
       
       width: 20%;
 
     }
 
     .form-row input {
+
+      padding: 0.5rem;
+
+      margin-left: 1rem;
+
+      border: 2px solid #ccc;
+
+      border-radius: 4px;
       
       width: 17%;
 
@@ -167,28 +183,6 @@
       border-color: #007bff;
     }
 
-    .mandatory {
-
-      padding: 0.5rem;
-
-      margin-left: 1rem;
-
-      border: 2px solid red;
-
-      border-radius: 4px;
-    }
-
-    .optional {
-
-      padding: 0.5rem;
-
-      margin-left: 1rem;
-
-      border: 2px solid #ccc;
-
-      border-radius: 4px;
-    }
-
     .information {
       
       font-weight: bold;
@@ -219,7 +213,7 @@
 
 <form id="inputForm" autocomplete="off">
 
-  <div class="form-row">
+  <div class="form-row" id="Age-row">
 
     <label for="Age">Age:</label>
 
@@ -227,7 +221,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Sex-row">
 
     <label for="Sex">Sex</label>
 
@@ -241,7 +235,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Dim1-row">
 
     <label for="Dim1">Max Dimension</label>
 
@@ -249,7 +243,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Dim2-row">
 
     <label for="Dim2">Min Dimension</label>
 
@@ -257,7 +251,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Veins-row">
 
     <label for="Veins">Veinous Infiltration</label>
 
@@ -271,7 +265,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Arteries-row">
 
     <label for="Arteries">Arterious Infiltration</label>
 
@@ -285,7 +279,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="DuctRetrodilatation-row">
 
     <label for="DuctRetrodilatation">Duct Retrodilatation, Ductal Invasion</label>
 
@@ -301,7 +295,7 @@
 
 
 
-  <div class="form-row">
+  <div class="form-row" id="VesselCompression-row">
 
     <label for="VesselCompression">Vessel Compression</label>
 
@@ -317,7 +311,7 @@
 
 
 
-  <div class="form-row">
+  <div class="form-row" id="Lymphadenopathy-row">
 
     <label for="Lymphadenopathy">Lymphadenopathy</label>
 
@@ -333,7 +327,7 @@
 
 
 
-  <div class="form-row">
+  <div class="form-row" id="Margins-row">
 
     <label for="Margins">Regular Margins</label>
 
@@ -349,7 +343,7 @@
 
 
 
-  <div class="form-row">
+  <div class="form-row" id="Ecostructure-row">
 
     <label for="Ecostructure">Echogenicity</label>
 
@@ -363,7 +357,7 @@
 
   </div>
 
-  <div class="form-row">
+  <div class="form-row" id="Multiple-row">
 
     <label for="Multiple">Multiple Lesions</label>
 
@@ -377,7 +371,7 @@
 
   </div>
   
-  <div class="form-row">
+  <div class="form-row" id="HospitalCenter-row">
   
   <label for="HospitalCenter">Hospital Center</label>
   
@@ -385,15 +379,13 @@
   
 </div>
 
-<div class="form-row">
+<div class="form-row" id="ProtocolCode-row">
 
   <label for="ProtocolCode">Protocol Code</label>
   
   <input id="ProtocolCode" type="text" class="optional">
   
 </div>
-
-  <p class="information"><br>*fields with red borders are mandatory fields!!</p>
 
   <button id="predictButton" type="button">Classify</button>
 
