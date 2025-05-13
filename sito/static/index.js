@@ -89,8 +89,10 @@ const setMandatoryFeaturesDT = () => {
   allFeatures.map(feature => {
     if (mandatoryFeaturesDT.includes(feature)) {
       document.getElementById(`${feature}-row`).style.display = ""
+      document.getElementById(feature).classList.add("mandatory")
     } else {
       document.getElementById(`${feature}-row`).style.display = "none"
+      document.getElementById(feature).classList.remove("mandatory")
     }
   })
   
@@ -113,8 +115,10 @@ const setMandatoryFeaturesNB = () => {
   allFeatures.map(feature => {
     if (mandatoryFeaturesNB.includes(feature)) {
       document.getElementById(`${feature}-row`).style.display = ""
+      document.getElementById(feature).classList.add("mandatory")
     } else {
       document.getElementById(`${feature}-row`).style.display = "none"
+      document.getElementById(feature).classList.remove("mandatory")
     }
   })
 }
@@ -138,8 +142,10 @@ const setMandatoryFeaturesLR = () => {
   allFeatures.map(feature => {
     if (mandatoryFeaturesLR.includes(feature)) {
       document.getElementById(`${feature}-row`).style.display = ""
+      document.getElementById(feature).classList.add("mandatory")
     } else {
       document.getElementById(`${feature}-row`).style.display = "none"
+      document.getElementById(feature).classList.remove("mandatory")
     }
   })
 }
