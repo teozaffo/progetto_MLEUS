@@ -71,8 +71,6 @@ const allFeatures = [
   'Ecostructure', 
   'Margins', 
   'Multiple',
-  'HospitalCenter',
-  'ProtocolCode'
 ]
 
 const setMandatoryFeaturesDT = () => {
@@ -82,8 +80,6 @@ const setMandatoryFeaturesDT = () => {
     'VesselCompression', 
     'Ecostructure', 
     'Margins',
-    'HospitalCenter',
-    'ProtocolCode'
   ]
 
   allFeatures.map(feature => {
@@ -107,9 +103,7 @@ const setMandatoryFeaturesNB = () => {
     'DuctRetrodilatation', 
     'VesselCompression', 
     'Ecostructure', 
-    'Margins',  
-    'HospitalCenter',
-    'ProtocolCode'
+    'Margins', 
   ]
 
   allFeatures.map(feature => {
@@ -135,8 +129,6 @@ const setMandatoryFeaturesLR = () => {
     'Ecostructure', 
     'Margins', 
     'Multiple',  
-    'HospitalCenter',
-    'ProtocolCode'
   ]
 
   allFeatures.map(feature => {
