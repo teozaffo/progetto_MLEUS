@@ -175,7 +175,7 @@ const predictClass = () => {
 
   if (missing.length > 0) {
 	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-	validationError.innerText = `⚠️ Compila i seguenti campi obbligatori: ${labels.join(', ')}`;
+	validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
 
 	// Evidenzia i campi mancanti
 	missing.forEach(id => {
@@ -207,8 +207,6 @@ const parseFormData = (result) => {
     HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
     ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
     prediction: result,
-      
-      
   };
 }
 
@@ -239,7 +237,8 @@ const sendToServer = async (data) => {
 }
 
 const setPredictionLogicBE = async () => {
-  const formData = parseFormData()
+  const formData = parseFormData();
+  localStorage.setItem("datetime", formData.datetime);
 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
@@ -250,16 +249,17 @@ const setPredictionLogicBE = async () => {
   }
 
   result = await predictFromServer(formData);
+  
+  if (!result || !result.prediction) {
+    console.error("Errore: nessuna previsione ricevuta dal server.");
+    return;
+  }
 
   localStorage.setItem("model", currModel);
 
   localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
   localStorage.setItem("predictionBackgroundColor", result.backgroundColor);
-  if (parseFloat(result.prediction) <= 25 || parseFloat(result.prediction) >= 75) {
-    localStorage.setItem("predictionColor", "white");
-  } else {
-    localStorage.setItem("predictionColor", "black");
-  }
+  localStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
 
   console.log(result.prediction);
 
@@ -268,7 +268,7 @@ const setPredictionLogicBE = async () => {
   const errorDiv = document.getElementById('error');
 
   errorDiv.innerText = '';
-}
+};
 
 window.onload = () => {
   // Pulisce tutti i campi di input e select
