@@ -255,6 +255,8 @@ const setPredictionLogicBE = async () => {
     return;
   }
 
+  percent = result.prediction
+
   localStorage.setItem("model", currModel);
 
   localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
