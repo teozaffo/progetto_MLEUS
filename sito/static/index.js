@@ -254,6 +254,8 @@ const setPredictionLogicBE = async () => {
     console.error("Errore: nessuna previsione ricevuta dal server.");
     return;
   }
+  
+  percent = result.prediction
 
   localStorage.setItem("model", currModel);
 
