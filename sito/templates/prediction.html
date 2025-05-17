@@ -7,212 +7,12 @@
   
     <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
 
-    <style>
-      body {
-
-        font-family: Arial, sans-serif;
-
-        background: #f8f9fa;
-
-        margin: 0;
-
-        padding: 2rem;
-
-      }
-
-      
-      .container {
-
-        max-width: 600px;
-
-        margin: auto;
-
-        background: #ffffff;
-
-        padding: 2rem;
-
-        border-radius: 8px;
-
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-
-      }
-
-      h2 {
-
-        text-align: center;
-
-        margin-bottom: 1.5rem;
-
-      }
-
-      .result {
-
-        margin-top: 2rem; /* Stacca la casella dal bottone */
-
-        padding: 1.5rem; /* Aggiunge più spazio interno alla casella */
-
-        border-radius: 8px; /* Arrotonda gli angoli */
-
-        text-align: center; /* Centra il testo orizzontalmente */
-
-        font-size: 1.5rem; /* Ingrossa il testo */
-
-        font-weight: bold; /* Rende il testo più marcato */
-
-        display: flex; /* Per centrare il testo verticalmente */
-
-        align-items: center; /* Centra il testo verticalmente */
-
-        justify-content: center; /* Centra il testo orizzontalmente */
-
-        width: 100%; /* Rende la casella larga quanto il pulsante */
-
-        box-sizing: border-box; /* Include padding e bordo nella larghezza */
-
-      }
-
-      .radio-row {
-        display: flex;
-        gap: 10px;
-      }
-
-      .form-row {
-
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        margin-top: 1rem;
-
-      }
-
-      .form-row label {
-
-        flex: 1;
-
-      }
-
-      .form-row select {
-
-        width: 20%;
-
-      }
-
-      label {
-
-        display: block;
-
-        margin-top: 1rem;
-
-      }
-
-      .optional {
-        padding: 0.5rem;
-
-        margin-left: 1rem;
-
-        border: 2px solid #ccc;
-
-        border-radius: 4px;
-      }
-
-      form.feedback {
-        padding-left: 2rem;
-        padding-bottom: 2rem;
-        padding-right: 2rem;
-      }
-
-      h2.feedback {
-        text-align: left;
-      }
-
-      #form-submit {
-        
-        margin-top: 1.5rem;
-
-        padding: 0.75rem;
-
-        width: 20%;
-
-        background-color: #007bff;
-
-        border: none;
-
-        color: white;
-
-        font-size: 1rem;
-
-        border-radius: 4px;
-
-        cursor: pointer;
-      }
-      
-      #back-button {
-        
-        margin-top: 1.5rem;
-
-        padding: 0.75rem;
-
-        width: 20%;
-
-        background-color: white;
-
-        border: 1px solid black;
-
-        color: black;
-
-        font-size: 1rem;
-
-        border-radius: 4px;
-
-        cursor: pointer;
-      }
-
-      #form-submit:hover {
-        background-color: #0056b3;
-      }
-
-      #gradient-bar {
-        width: 50%;
-        height: 15px;
-        background: linear-gradient(to right, #000099, #ffffff, #990000);
-        position: relative;
-        border: 1px solid #000;
-        margin-top: 10px;
-      }
-
-      #gradient-legend-benign {
-        position: absolute;
-        left: 0;
-        top: 100%;
-        font-size: 10px;
-        margin-top: 2px;
-      }
-
-      #gradient-legend-uncertain {
-        position: absolute;
-        left: 50%;
-        top: 100%;
-        transform: translateX(-50%);
-        font-size: 10px;
-        margin-top: 2px;
-      }
-
-      #gradient-legend-malignant {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        font-size: 10px;
-        margin-top: 2px;
-      }
-    </style>
+    <link rel="stylesheet" href="../static/style.css">
 
     <script type="text/javascript" src="../static/prediction.js"></script>
 
-
   </head>
+  
   <body>
 
     <div class="container">
@@ -286,11 +86,18 @@
           </select>
         </div>
 
+		<div style="margin-top: 2rem;"></div>
+		
         <label for="reason">5. Why?</label><br>
         <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
 
-        <button id="form-submit" type="submit">Send</button>
-		    <button id="back-button" type="button">Back</button>
+        <div class="button-row">
+			<button id="form-submit" type="submit">Send</button>
+			<button id="back-button" type="button">Back</button>
+		</div>
+		
+		<p id="feedback-confirmation" style="margin-top: 1rem; font-weight: bold; color: green;"></p>
+
       </form>
 
     </div>
