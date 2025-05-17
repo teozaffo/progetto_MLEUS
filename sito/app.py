@@ -165,12 +165,13 @@ def model_predict():
     try :
         result, color = predict_input(data)
         
-        data['prediction'] = f"{result}% Malignant"
+        percent = round(float(result))       
+        data['prediction'] = f"{percent}% Malignant"
         salva_diagnosi()
         
         return jsonify({
             "message": f"case Predicted and Saved Succesfully!",
-            "prediction": str(result),
+            "prediction": str(percent),
             "backgroundColor": color
         }) 
     except Exception as e:

@@ -246,19 +246,16 @@ const setPredictionLogicBE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  result = await predictFromServer(formData);
+  const result = await predictFromServer(formData);
   
   if (!result || !result.prediction) {
     console.error("Errore: nessuna previsione ricevuta dal server.");
     return;
   }
-  
-  percent = result.prediction
 
-  percent = result.prediction
+  const percent = result.prediction
 
   localStorage.setItem("model", currModel);
-
   localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
   localStorage.setItem("predictionBackgroundColor", result.backgroundColor);
   localStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
@@ -267,9 +264,9 @@ const setPredictionLogicBE = async () => {
 
   window.location.href = "/prediction"
 
-  const errorDiv = document.getElementById('error');
+  //const errorDiv = document.getElementById('error');
 
-  errorDiv.innerText = '';
+  //errorDiv.innerText = '';
 };
 
 window.onload = () => {

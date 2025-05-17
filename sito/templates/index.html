@@ -10,188 +10,7 @@
 
   <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
 
-  <style>
-
-    body {
-
-      font-family: Arial, sans-serif;
-
-      background: #f8f9fa;
-
-      margin: 0;
-
-      padding: 2rem;
-
-    }
-
-    .container {
-
-      max-width: 600px;
-
-      margin: auto;
-
-      background: #ffffff;
-
-      padding: 2rem;
-
-      border-radius: 8px;
-
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-
-    }
-
-    h2 {
-
-      text-align: center;
-
-      margin-bottom: 1.5rem;
-
-    }
-
-    label {
-
-      display: block;
-
-      margin-top: 1rem;
-
-    }
-
-    input {
-
-      width: 100%;
-
-      padding: 0.5rem;
-
-      margin-top: 0.25rem;
-
-      border: 1px solid #ccc;
-
-      border-radius: 4px;
-
-    }
-
-    button {
-
-      margin-top: 1.5rem;
-
-      padding: 0.75rem;
-
-      width: 100%;
-
-      background-color: #007bff;
-
-      border: none;
-
-      color: white;
-
-      font-size: 1rem;
-
-      border-radius: 4px;
-
-      cursor: pointer;
-
-    }
-
-    button:hover {
-
-      background-color: #0056b3;
-
-    }
-
-    .error {
-
-      color: red;
-
-      margin-top: 1rem;
-
-      text-align: center;
-
-    }
-
-    .form-row {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
-      margin-top: 1rem;
-
-    }
-
-
-
-    .form-row label {
-
-      flex: 1;
-
-    }
-
-    .form-row select {
-
-      padding: 0.5rem;
-
-      margin-left: 1rem;
-
-      border: 2px solid #ccc;
-
-      border-radius: 4px;
-      
-      width: 20%;
-
-    }
-
-    .form-row input {
-
-      padding: 0.5rem;
-
-      margin-left: 1rem;
-
-      border: 2px solid #ccc;
-
-      border-radius: 4px;
-      
-      width: 17%;
-
-    }
-    
-    .btn-group {
-
-      display: flex;
-
-      flex-direction: row;
-
-      justify-content: center;
-
-    }
-
-    .model-btn {
-      border: solid 2px #000;
-      background-color: white;
-      color: black;
-      padding: 10px 24px;
-      font-size: 15px;
-      cursor: pointer;
-      border-color:#007bff;
-      margin-top: 0cm;
-    }
-
-    .model-btn:hover {
-      color: #ffffff;
-      background-color: #007bff;
-      border-color: #007bff;
-    }
-
-    .information {
-      
-      font-weight: bold;
-      
-      color: red;
-
-    }
-
-  </style>
+  <link rel="stylesheet" href="../static/style.css">
 
   <script type="text/javascript" src="../static/index.js"></script>
 
@@ -206,16 +25,16 @@
     <h3> Select preferred Model:</h3>
 
     <div class="btn-group">
-      <button class="model-btn" id="DT">Sensitive (DT)</button>
-      <button class="model-btn" id="NB">Balanced (NB)</button>
-      <button class="model-btn" id="LR">Specific (LR)</button>
+      <button class="model-btn" id="DT">Sensitive</button>
+      <button class="model-btn" id="NB">Balanced</button>
+      <button class="model-btn" id="LR">Specific</button>
     </div>
 
 <form id="inputForm" autocomplete="off">
 
   <div class="form-row" id="Age-row">
 
-    <label for="Age">Age:</label>
+    <label for="Age">Age</label>
 
     <input id="Age" type="text">
 
@@ -373,7 +192,7 @@
   
   <div class="form-row" id="HospitalCenter-row">
   
-  <label for="HospitalCenter">Hospital Center</label>
+  <label for="HospitalCenter">Hospital Center &nbsp; (optional)</label>
   
   <input id="HospitalCenter" type="text" class="optional">
   
@@ -381,7 +200,7 @@
 
 <div class="form-row" id="ProtocolCode-row">
 
-  <label for="ProtocolCode">Protocol Code</label>
+  <label for="ProtocolCode">Protocol Code &nbsp; &nbsp; (optional)</label>
   
   <input id="ProtocolCode" type="text" class="optional">
   
