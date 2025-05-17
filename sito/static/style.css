@@ -1,0 +1,261 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 2rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+}
+
+input, select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+button, #form-submit {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button {
+  width: 100%;
+  background-color: #007bff;
+  border: none;
+  color: white;
+}
+
+button:hover, #form-submit:hover {
+  background-color: #0056b3;
+}
+
+form.feedback {
+  padding-left: 2rem;
+  padding-bottom: 2rem;
+  padding-right: 2rem;
+}
+
+h2.feedback {
+  text-align: left;
+}
+
+textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical; /* consente all'utente di ridimensionare in verticale */
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.button-row button {
+  width: 140px; /* oppure 120px se li vuoi ancora più piccoli */
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.form-row label {
+  flex: 1;
+}
+
+.form-row select {
+  width: 20%;
+}
+
+.form-row input {
+  width: 17%;
+  margin-left: 1rem;
+  border: 2px solid #ccc;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.model-btn {
+  border: solid 2px #007bff;
+  background-color: white;
+  color: black;
+  padding: 10px 24px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.model-btn:hover {
+  color: #ffffff;
+  background-color: #007bff;
+}
+
+.information {
+  font-weight: bold;
+  color: red;
+}
+
+.result {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.radio-row {
+  display: flex;
+  justify-content: space-around; /* distribuisce equamente */
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0px; /* evita spazi eccessivi tra le label */
+}
+
+.radio-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* piccolo spazio tra testo e pallino */
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.optional {
+  padding: 0.5rem;
+  margin-left: 1rem;
+  border: 2px solid #ccc;
+}
+
+#back-button {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+}
+
+#back-button:hover {
+  background-color: #f0f0f0;
+}
+
+#form-submit {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+#form-submit:hover {
+  background-color: #0056b3;
+}
+
+#gradient-bar {
+  width: 50%;
+  height: 15px;
+  background: linear-gradient(to right, #000099, #ffffff, #990000);
+  position: relative;
+  border: 1px solid #000;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto; /* centra la barra */
+}
+
+#gradient-legend-benign,
+#gradient-legend-uncertain,
+#gradient-legend-malignant {
+  position: absolute;
+  top: 100%;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+#gradient-legend-benign { left: 0; }
+#gradient-legend-uncertain { left: 50%; transform: translateX(-50%); }
+#gradient-legend-malignant { right: 0; }
+
+#predictButton {
+  width: 100%;  /* di default: su mobile */
+  max-width: 200px; /* su desktop sarà più stretto */
+  display: block;
+  margin: 1.5rem auto 0 auto; /* centra orizzontalmente */
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
+#predictButton:hover {
+  background-color: #0056b3;
+}
+
+
+@media (max-width: 600px) {
+  #gradient-bar {
+    width: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row select {
+    width: 40%;
+  }
+
+  .form-row input {
+    width: 40%;
+  }
+}
