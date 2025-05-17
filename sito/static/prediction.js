@@ -44,8 +44,16 @@ window.onload = () => {
       })
       .then(response => response.json())
       .then(data => {
-        console.log("✅ Risposta dal server:", data);
-        window.location.href = "/";
+		console.log("✅ Risposta dal server:", data);
+		//document.getElementById("feedback-confirmation").innerText = "✅ Feedback saved successfully.";
+		const confirmation = document.getElementById("feedback-confirmation");
+		confirmation.innerText = "✅ Feedback saved successfully.";
+
+		// Dopo 1 secondo, torna a index.html
+		setTimeout(() => {
+		window.location.href = "/";
+		}, 1500);
+		
 		//history.back();
       })
       .catch(error => {
