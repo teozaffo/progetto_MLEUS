@@ -121,22 +121,30 @@ textarea {
 
 .btn-group {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
+  flex-wrap: nowrap; /* ⛔ non andare a capo */
+  gap: 6px;
+  margin-top: 1rem;
 }
 
 .model-btn {
-  border: solid 2px #007bff;
+  flex: 1;
+  max-width: 33%;
+  min-width: 80px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 2px solid #007bff;
   background-color: white;
   color: black;
-  padding: 10px 24px;
-  font-size: 15px;
   cursor: pointer;
-}
+  text-align: center;
+  border-radius: 4px;
+  box-sizing: border-box;
+}}
 
 .model-btn:hover {
-  color: #ffffff;
   background-color: #007bff;
+  color: white;
 }
 
 .information {
@@ -156,23 +164,80 @@ textarea {
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .radio-row {
   display: flex;
-  justify-content: space-around; /* distribuisce equamente */
-  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-top: 0.5rem;
-  gap: 0px; /* evita spazi eccessivi tra le label */
 }
 
 .radio-row label {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px; /* piccolo spazio tra testo e pallino */
+  flex: 1;
+}
+
+.radio-row-labels {
+  display: none; /* desktop default */
+}
+
+.radio-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  white-space: nowrap; /* ⛔ non va a capo! */
+  padding: 0 8px;
+  margin-top: 2px;
+}
+
+.radio-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.radio-buttons label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 2rem; /* Spazio tra le domande su desktop */
+}
+
+
+
+.radio-row-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
   white-space: nowrap;
 }
+
+.radio-row-desktop label {
+  display: flex;
+  align-items: center;
+  gap: 24px; /* Aumenta la distanza tra scritta e pallino */
+  font-size: 14px;
+}
+
+
+.radio-row-mobile {
+  display: none;
+}
+
 
 .optional {
   padding: 0.5rem;
@@ -251,11 +316,54 @@ textarea {
 }
 
 @media (max-width: 600px) {
+
+
+@media (max-width: 600px) {
+	
+  .container {
+    padding: 1.25rem;
+    max-width: 98%; /* aumenta l'area usata su mobile */
+  }
+	
   .form-row select {
     width: 40%;
   }
 
   .form-row input {
     width: 40%;
+  }
+	
+  .radio-group {
+    margin-bottom: 2rem;
+  }
+  
+  .radio-row-desktop {
+    display: none;
+  }
+
+  .radio-row-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .radio-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .radio-buttons label {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .radio-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    white-space: nowrap;
+    padding: 0 8px;
   }
 }
