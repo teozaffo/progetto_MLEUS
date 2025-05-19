@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from joblib import load
 import joblib
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, PowerTransformer, MaxAbsScaler, RobustScaler, Normalizer
+
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from flexible_scaler import FlexibleScaler
 
@@ -31,6 +34,8 @@ def predict_input(data):
     print("✅ MODELLO RICEVUTO:", data.get("model"))
     with open(f"./sito/{data['model']}.joblib", 'rb') as f:
       clf = joblib.load(f)
+      
+    print(data['model'])
     
     if data['model'] == "LR":
       df = parse_LR_input(data)
@@ -53,6 +58,7 @@ def predict_input(data):
   
   except Exception as e:
     print("Invalid Input Model, must be DT, NB or LR")
+    print(e)
     raise Exception("Invalid Input Model, must be DT, NB or LR")
 
 def parse_LR_input(data):
