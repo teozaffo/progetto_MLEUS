@@ -43,7 +43,6 @@ def predict_input(data):
       df = parse_NB_input(data)
     elif data['model'] == "DT":
       df = parse_DT_input(data)
-      clf = joblib.load("./sito/modello_DT.pkl")
     else:
       raise Exception("Invalid Input Model, must be DT, NB or LR")
 
