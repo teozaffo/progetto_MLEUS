@@ -1,6 +1,12 @@
 window.onload = () => {
   // Popola il risultato nella pagina
-  document.getElementById("result").innerText = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+  
+  // Nasconde la percentuale
+  const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+  const cleanedPrediction = rawPrediction.replace(/\d+% /, "");  // rimuove "23% "
+  document.getElementById("result").innerText = cleanedPrediction;
+  
+  // document.getElementById("result").innerText = localStorage.getItem("prediction") || ":: Nessun risultato ::";
   document.getElementById("result").style.backgroundColor = localStorage.getItem("predictionBackgroundColor") || "#f0f0f0";
   document.getElementById("result").style.color = localStorage.getItem("predictionColor") || "black";
   document.getElementById("selected-model").innerText = `Selected Model: ${localStorage.getItem("model") || "-"}`;
