@@ -81,7 +81,11 @@ def salva_diagnosi():
             print("📁 File non trovato, ne creo uno nuovo con intestazioni")
 
         # Aggiungi la nuova riga
-        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        # df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        new_entry = pd.DataFrame([new_row])
+        if not df.empty:
+            new_entry = pd.DataFrame([new_row], columns=df.columns)
+        df = pd.concat([df, new_entry], ignore_index=True)
 
         # Salva il file
         df.to_excel(EXCEL_FILE, index=False)

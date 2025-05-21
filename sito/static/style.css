@@ -68,6 +68,12 @@ textarea {
   margin-top: 0.5rem;
 }
 
+input[type="radio"] {
+  transform: scale(1.5); /* Aumenta la dimensione (puoi anche usare 1.4, 1.6...) */
+  margin: 0 4px;
+  cursor: pointer;
+}
+
 .button-row {
   display: flex;
   justify-content: center;

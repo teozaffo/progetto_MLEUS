@@ -32,7 +32,7 @@ def get_color(ratio):
 def predict_input(data):
   try :
     print("✅ MODELLO RICEVUTO:", data.get("model"))
-    with open(f"./sito/{data['model']}.joblib", 'rb') as f:
+    with open(f"./{data['model']}.joblib", 'rb') as f:
       clf = joblib.load(f)
       
     print(data['model'])
