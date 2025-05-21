@@ -1,7 +1,6 @@
 # app.py
 from openpyxl import load_workbook
 import pytz
-from flexible_scaler import FlexibleScaler
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pandas as pd

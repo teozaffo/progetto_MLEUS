@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 from joblib import load
 import joblib
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, PowerTransformer, MaxAbsScaler, RobustScaler, Normalizer
-
-from sklearn.base import BaseEstimator, TransformerMixin
-
 from flexible_scaler import FlexibleScaler
+
+dt_model = joblib.load("./sito/DT.joblib")
+nb_model = joblib.load("./sito/NB.joblib")
+lr_model = joblib.load("./sito/LR.joblib")
 
 def blend_color(base_color, ratio):
     # base_color is (R, G, B)
@@ -30,36 +30,27 @@ def get_color(ratio):
         return blend_color((0, 0, 255), strength)
 
 def predict_input(data):
-  try :
-    print("✅ MODELLO RICEVUTO:", data.get("model"))
-    with open(f"./{data['model']}.joblib", 'rb') as f:
-      clf = joblib.load(f)
-      
-    print(data['model'])
-    
-    if data['model'] == "LR":
-      df = parse_LR_input(data)
-    elif data['model'] == "NB":
-      df = parse_NB_input(data)
-    elif data['model'] == "DT":
-      df = parse_DT_input(data)
-    else:
-      raise Exception("Invalid Input Model, must be DT, NB or LR")
-
-    clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
-    
-    color = get_color(float("{:.2f}".format(clf_prediction /100)))
-    
-    print(f"model: {data['model']}")
-    print("%.2f" % clf_prediction)
-    print("----------")
-    
-    return "%.2f" % clf_prediction, color
-  
-  except Exception as e:
-    print("Invalid Input Model, must be DT, NB or LR")
-    print(e)
+  if data['model'] == "LR":
+    df = parse_LR_input(data)
+    clf = lr_model
+  elif data['model'] == "NB":
+    df = parse_NB_input(data)
+    clf = nb_model
+  elif data['model'] == "DT":
+    df = parse_DT_input(data)
+    clf = dt_model
+  else:
     raise Exception("Invalid Input Model, must be DT, NB or LR")
+
+  clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
+  
+  color = get_color(float("{:.2f}".format(clf_prediction /100)))
+  
+  print(f"model: {data['model']}")
+  print("%.2f" % clf_prediction)
+  print("----------")
+  
+  return "%.2f" % clf_prediction, color
 
 def parse_LR_input(data):
   df = pd.DataFrame({
