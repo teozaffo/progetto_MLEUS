@@ -4,28 +4,28 @@ window.onload = () => {
   // Modifica la risposta in base alla percentuale
 	const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
 
-    const match = rawPrediction.match(/(\d+)%/);  // cattura "23%" ovunque
-    let displayPrediction = ":: Invalid prediction format ::";
+  const match = rawPrediction.match(/(\d+)%/);  // cattura "23%" ovunque
+  let displayPrediction = ":: Invalid prediction format ::";
 
-    if (match) {
-      const percent = parseInt(match[1]);
+  if (match) {
+    const percent = parseInt(match[1]);
 
-      if (percent < 5) {
-        displayPrediction = "Most Likely Benign";
-      } else if (percent < 45) {
-        displayPrediction = "Likely Benign";
-      } else if (percent <= 55) {
-        displayPrediction = "Uncertain Case";
-      } else if (percent <= 95) {
-        displayPrediction = "Likely Malign";
-      } else {
-        displayPrediction = "Most Likely Malignant";
-      }
+    if (percent < 5) {
+      displayPrediction = "Most Likely Benign";
+    } else if (percent < 45) {
+      displayPrediction = "Likely Benign";
+    } else if (percent <= 55) {
+      displayPrediction = "Uncertain Case";
+    } else if (percent <= 95) {
+      displayPrediction = "Likely Malignant";
     } else {
-      displayPrediction = rawPrediction.replace(/\d+% /, "");  // fallback se non è presente la percentuale
+      displayPrediction = "Most Likely Malignant";
     }
+  } else {
+    displayPrediction = rawPrediction.replace(/\d+% /, "");  // fallback se non è presente la percentuale
+  }
 
-    document.getElementById("result").innerText = displayPrediction;
+  document.getElementById("result").innerText = displayPrediction;
   
   // Nasconde la percentuale
   /*const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
