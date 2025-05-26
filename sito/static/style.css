@@ -152,10 +152,30 @@ input[type="radio"] {
   padding: 0 0.25rem;
   margin-top: 0.5rem;
   margin-bottom: 0rem;
+  font-size: 0.8rem;
 }
 
 .icon-wrapper i {
   transition: transform 0.5s ease;
+}
+
+.hover-box {
+  display: none;
+  position: relative;
+  transform: translateX(-50%);
+  max-height: fit-content;
+  width: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  font-size: 0.7rem;
+}
+
+.icon-wrapper:hover .hover-box {
+  display: block;
 }
 
 .info-toggle:checked + .form-row + .info-icon-mobile + .info-drawer {
@@ -163,7 +183,6 @@ input[type="radio"] {
   padding: 0.75rem;
 }
 
-.info-toggle:checked + .form-row .info-icon-desktop i,
 .info-toggle:checked + .form-row + .info-icon-mobile i {
   transform: rotate(180deg);
 }
