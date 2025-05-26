@@ -111,8 +111,10 @@ input[type="radio"] {
   margin-top: 1rem;
 }
 
-.form-row label {
-  flex: 1;
+.label-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .form-row select {
@@ -123,6 +125,66 @@ input[type="radio"] {
   width: 17%;
   margin-left: 1rem;
   border: 2px solid #ccc;
+}
+
+.info-icon-desktop {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.info-icon-mobile {
+  display: none;
+}
+
+.info-toggle {
+  display: none;
+}
+
+.info-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+  background-color: #f1f1f1;
+  border-left: 3px solid #636363;
+  padding: 0 0.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0rem;
+  font-size: 0.8rem;
+}
+
+.icon-wrapper i {
+  transition: transform 0.5s ease;
+}
+
+.hover-box {
+  display: none;
+  position: relative;
+  transform: translateX(-50%);
+  max-height: fit-content;
+  width: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  font-size: 0.7rem;
+}
+
+.icon-wrapper:hover .hover-box {
+  display: block;
+}
+
+.info-toggle:checked + .form-row + .info-icon-mobile + .info-drawer {
+  max-height: fit-content;
+  padding: 0.75rem;
+}
+
+.info-toggle:checked + .form-row + .info-icon-mobile i {
+  transform: rotate(180deg);
 }
 
 .btn-group {
@@ -146,7 +208,7 @@ input[type="radio"] {
   text-align: center;
   border-radius: 4px;
   box-sizing: border-box;
-}}
+}
 
 .model-btn:hover {
   background-color: #007bff;
@@ -322,13 +384,23 @@ input[type="radio"] {
 }
 
 @media (max-width: 600px) {
-
-
-@media (max-width: 600px) {
 	
   .container {
     padding: 1.25rem;
     max-width: 98%; /* aumenta l'area usata su mobile */
+  }
+  
+  .info-icon-desktop {
+    display: none
+  }
+
+  .info-icon-mobile {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0;
+    margin-left: 0.15rem;
+    cursor: pointer;
   }
 	
   .form-row select {

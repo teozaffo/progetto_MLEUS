@@ -1,62 +1,4 @@
-let currModel = ""
-
-document.addEventListener('DOMContentLoaded', function () {
-  document
-    .getElementById("predictButton")
-    .addEventListener("click", () => predictClass());
-
-  document.getElementById("inputForm").hidden = true
-
-  const models = ["DT", "NB", "LR"];
-
-  models.forEach(model => {
-    addEventListenersForModelButtons(model, models);
-	
-  });
-  document.getElementById("inputForm").reset();
-});
-
-const addEventListenersForModelButtons = (model, models) => {
-  document.getElementById(model).addEventListener("click", () => {
-    document.getElementById("inputForm").hidden = false
-
-    document.getElementById(model).style.backgroundColor = "#007bff"
-    document.getElementById(model).style.color = "white"
-	
-	  currModel = model
-
-    setMandatoryFeatures(model)
-	
-    //Ripristina il colore di sfondo di tutti i campi
-    allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
-      const el = document.getElementById(id);
-      el.style.backgroundColor = "white";
-    });
-
-    models.map(innerModel => {
-      if (innerModel !== model) {
-        document.getElementById(innerModel).style.color = "black"
-        document.getElementById(innerModel).style.backgroundColor = "white"
-        document.getElementById(innerModel).style.borderColor = "#007bff"
-      }
-    });
-	
-    //Reset risultati e messaggi
-    document.getElementById("error").innerText = "";
-    document.getElementById("validationError").innerText = "";
-  });
-}
-
-const setMandatoryFeatures = (model) => {
-
-  if (model === "DT") {
-    setMandatoryFeaturesDT()
-  } else if (model === "NB") {
-    setMandatoryFeaturesNB()
-  } else {
-    setMandatoryFeaturesLR()
-  }
-}
+let currModel = "";
 
 const allFeatures = [
   'Age',
@@ -71,7 +13,67 @@ const allFeatures = [
   'Ecostructure', 
   'Margins', 
   'Multiple',
-]
+];
+
+document.addEventListener('DOMContentLoaded', function () {
+  document
+    .getElementById("predictButton")
+    .addEventListener("click", () => predictClass());
+
+  document.getElementById("inputForm").hidden = true;
+
+  const models = ["DT", "NB", "LR"];
+
+  models.forEach(model => {
+    addEventListenersForModelButtons(model, models);
+	
+  });
+  document.getElementById("inputForm").reset();
+});
+
+const addEventListenersForModelButtons = (model, models) => {
+  document.getElementById(model).addEventListener("click", () => {
+    document.getElementById("inputForm").hidden = false;
+
+    document.getElementById(model).style.backgroundColor = "#007bff";
+    document.getElementById(model).style.color = "white";
+	
+	  currModel = model;
+
+    setMandatoryFeatures(model);
+	
+    //Ripristina il colore di sfondo di tutti i campi
+    allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
+      const el = document.getElementById(id);
+      el.style.backgroundColor = "white";
+    });
+
+    models.map(innerModel => {
+      if (innerModel !== model) {
+        document.getElementById(innerModel).style.color = "black";
+        document.getElementById(innerModel).style.backgroundColor = "white";
+        document.getElementById(innerModel).style.borderColor = "#007bff";
+      }
+    });
+	
+    //Reset risultati e messaggi
+    document.getElementById("error").innerText = "";
+    document.getElementById("validationError").innerText = "";
+
+    document.querySelectorAll('.info-toggle').forEach(cb => cb.checked = false);
+  });
+}
+
+const setMandatoryFeatures = (model) => {
+
+  if (model === "DT") {
+    setMandatoryFeaturesDT();
+  } else if (model === "NB") {
+    setMandatoryFeaturesNB();
+  } else {
+    setMandatoryFeaturesLR();
+  }
+}
 
 const setMandatoryFeaturesDT = () => {
   const mandatoryFeaturesDT = [
@@ -80,17 +82,17 @@ const setMandatoryFeaturesDT = () => {
     'VesselCompression', 
     'Ecostructure', 
     'Margins',
-  ]
+  ];
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesDT.includes(feature)) {
-      document.getElementById(`${feature}-row`).style.display = ""
-      document.getElementById(feature).classList.add("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "";
+      document.getElementById(feature).classList.add("mandatory");
     } else {
-      document.getElementById(`${feature}-row`).style.display = "none"
-      document.getElementById(feature).classList.remove("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "none";
+      document.getElementById(feature).classList.remove("mandatory");
     }
-  })
+  });
   
 }
 
@@ -104,17 +106,17 @@ const setMandatoryFeaturesNB = () => {
     'VesselCompression', 
     'Ecostructure', 
     'Margins', 
-  ]
+  ];
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesNB.includes(feature)) {
-      document.getElementById(`${feature}-row`).style.display = ""
-      document.getElementById(feature).classList.add("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "";
+      document.getElementById(feature).classList.add("mandatory");
     } else {
-      document.getElementById(`${feature}-row`).style.display = "none"
-      document.getElementById(feature).classList.remove("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "none";
+      document.getElementById(feature).classList.remove("mandatory");
     }
-  })
+  });
 }
 
 const setMandatoryFeaturesLR = () => {
@@ -129,17 +131,17 @@ const setMandatoryFeaturesLR = () => {
     'Ecostructure', 
     'Margins', 
     'Multiple',  
-  ]
+  ];
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesLR.includes(feature)) {
-      document.getElementById(`${feature}-row`).style.display = ""
-      document.getElementById(feature).classList.add("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "";
+      document.getElementById(feature).classList.add("mandatory");
     } else {
-      document.getElementById(`${feature}-row`).style.display = "none"
-      document.getElementById(feature).classList.remove("mandatory")
+      document.getElementById(`${feature}-feature`).style.display = "none";
+      document.getElementById(feature).classList.remove("mandatory");
     }
-  })
+  });
 }
 
 function validateMandatoryFields() {
@@ -183,7 +185,7 @@ const predictClass = () => {
 	return;
   }
   
-  setPredictionLogicBE()
+  setPredictionLogicBE();
 }
 
 const parseFormData = (result) => {
@@ -253,7 +255,7 @@ const setPredictionLogicBE = async () => {
     return;
   }
 
-  const percent = result.prediction
+  const percent = result.prediction;
 
   localStorage.setItem("model", currModel);
   localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
@@ -262,7 +264,7 @@ const setPredictionLogicBE = async () => {
 
   console.log(result.prediction);
 
-  window.location.href = "/prediction"
+  window.location.href = "/prediction";
 
   //const errorDiv = document.getElementById('error');
 
