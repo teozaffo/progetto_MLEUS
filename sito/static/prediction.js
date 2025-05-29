@@ -66,7 +66,7 @@ window.onload = () => {
       const usefulness = document.querySelector('input[name="usefulness"]:checked')?.value;
       const influence = document.querySelector('input[name="influence"]:checked')?.value;
       const recommendability = document.getElementById("recommendability").value;
-      const reason = document.getElementById("reason").value;
+      const reason = String(document.getElementById("reason").value);
 
       const feedback = {
         datetime: localStorage.getItem("datetime"),
