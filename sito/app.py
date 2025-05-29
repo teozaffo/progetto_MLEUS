@@ -6,18 +6,52 @@ from flask_cors import CORS
 import pandas as pd
 import os
 import json
+import uuid
 from datetime import datetime
 from model_prediction import predict_input
 import pytz
 from openpyxl import load_workbook, Workbook
 from dateutil import parser
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 CORS(app)
 
-# Percorso assoluto del file Excel su PythonAnywhere
-EXCEL_FILE = "./sito/diagnosi.xlsx"
+load_dotenv()
+
+excel_file_path = os.getenv('EXCEL_FILE')
+
+'''
+columns = [
+    "Datetime",
+    "Ip Address",
+    "Model",
+    "Hospital Center",
+    "Protocol Code",
+    "Age",
+    "Sex",
+    "Max Dim",
+    "Min Dim",
+    "Veinous Inf",
+    "Arterious Inf",
+    "Duct Ret/Ductal Inv",
+    "Vessel Comp",
+    "Lymphadenopathy",
+    "Reg Margins",
+    "Echogenicity",
+    "Mult Lesions",
+    "Prediction"
+]
+
+if os.path.exists(excel_file_path_path):
+    excel_df = pd.read_excel(excel_file_path_path)
+    print("📂 File Excel trovato con", len(df), "righe")
+else:
+    excel_df = pd.DataFrame(columns=columns)
+    print("📁 File non trovato, ne creo uno nuovo con intestazioni")
+'''
+
 
 @app.route("/")
 def index():
@@ -48,6 +82,7 @@ def salva_diagnosi():
 
     # Costruisci la nuova riga da salvare
     new_row = {
+        "ID": uuid.uuid4(),
         "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
         "Ip Address": data.get("ip", request.remote_addr),
         "Model": data.get("model", "unknown"),
@@ -65,15 +100,15 @@ def salva_diagnosi():
         "Reg Margins": data.get("Margins"),
         "Echogenicity": data.get("Ecostructure"),
         "Mult Lesions": data.get("Multiple"),
-        "Prediction": data.get("prediction")
+        "Prediction": data.get("prediction") 
     }
 
     print("📄 Riga da salvare:", new_row)
 
     try:
         # Se il file non esiste, crea un nuovo DataFrame con intestazioni
-        if os.path.exists(EXCEL_FILE):
-            df = pd.read_excel(EXCEL_FILE)
+        if os.path.exists(excel_file_path):
+            df = pd.read_excel(excel_file_path)
             print("📂 File Excel trovato con", len(df), "righe")
         else:
             df = pd.DataFrame(columns=new_row.keys())
@@ -87,11 +122,11 @@ def salva_diagnosi():
         df = pd.concat([df, new_entry], ignore_index=True)
 
         # Salva il file
-        df.to_excel(EXCEL_FILE, index=False)
+        df.to_excel(excel_file_path, index=False)
         # Allarga automaticamente le colonne
         from openpyxl.utils import get_column_letter
 
-        wb = load_workbook(EXCEL_FILE)
+        wb = load_workbook(excel_file_path)
         ws = wb.active
 
         for column_cells in ws.columns:
@@ -100,11 +135,13 @@ def salva_diagnosi():
             col_letter = get_column_letter(column_cells[0].column)
             ws.column_dimensions[col_letter].width = adjusted_width
 
-        wb.save(EXCEL_FILE)
+        wb.save(excel_file_path)
 
-        print("💾 Dati scritti correttamente su", EXCEL_FILE)
+        print("💾 Dati scritti correttamente su", excel_file_path)
 
-        return jsonify({"message": "Dati salvati con successo"})
+        return jsonify({
+            "message": "Dati salvati con successo"
+        })
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
@@ -116,7 +153,7 @@ def ricevi_questionario():
     print("📩 Ricevuto questionario:", data)
 
     try:
-        df = pd.read_excel(EXCEL_FILE)
+        df = pd.read_excel(excel_file_path)
 
         # Confronto robusto con datetime localizzato
         incoming_dt = parser.isoparse(data["datetime"]).astimezone(pytz.timezone("Europe/Rome"))
@@ -140,13 +177,13 @@ def ricevi_questionario():
         df.at[i, "Q5"] = str(data.get("q5")) if data.get("q5") is not None else ""
 
 
-        df.to_excel(EXCEL_FILE, index=False)
+        df.to_excel(excel_file_path, index=False)
         print("✅ Questionario salvato con successo")
         
         # Ridimensiona le colonne dopo aver salvato i nuovi dati
         from openpyxl.utils import get_column_letter
 
-        wb = load_workbook(EXCEL_FILE)
+        wb = load_workbook(excel_file_path)
         ws = wb.active
 
         for column_cells in ws.columns:
@@ -155,7 +192,7 @@ def ricevi_questionario():
             col_letter = get_column_letter(column_cells[0].column)
             ws.column_dimensions[col_letter].width = adjusted_width
 
-            wb.save(EXCEL_FILE)
+            wb.save(excel_file_path)
         return jsonify({"message": "Salvato con successo"})
 
     except Exception as e:
