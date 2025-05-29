@@ -238,7 +238,7 @@ const sendToServer = async (data) => {
 
 const setPredictionLogicBE = async () => {
   const formData = parseFormData();
-  localStorage.setItem("datetime", formData.datetime);
+  sessionStorage.setItem("datetime", formData.datetime);
 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
@@ -257,12 +257,11 @@ const setPredictionLogicBE = async () => {
 
   const percent = result.prediction;
 
-  localStorage.setItem("model", currModel);
-  localStorage.setItem("prediction", `:: ${result.prediction}% Malignant ::`);
-  localStorage.setItem("predictionBackgroundColor", result.backgroundColor);
-  localStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
-
-  console.log(result.prediction);
+  sessionStorage.setItem("model", currModel);
+  sessionStorage.setItem("prediction", parseInt(percent));
+  sessionStorage.setItem("predictionBackgroundColor", result.backgroundColor);
+  sessionStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
+  sessionStorage.setItem("token", result.token)
 
   window.location.href = "/prediction";
 

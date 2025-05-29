@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import json
 import uuid
+import jwt
 from datetime import datetime
 from model_prediction import predict_input
 import pytz
@@ -21,6 +22,7 @@ CORS(app)
 load_dotenv()
 
 excel_file_path = os.getenv('EXCEL_FILE')
+jwt_secret = os.getenv('JWT_SECRET')
 
 '''
 columns = [
@@ -82,7 +84,7 @@ def salva_diagnosi():
 
     # Costruisci la nuova riga da salvare
     new_row = {
-        "ID": uuid.uuid4(),
+        "ID": str(uuid.uuid4()),
         "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
         "Ip Address": data.get("ip", request.remote_addr),
         "Model": data.get("model", "unknown"),
@@ -106,6 +108,8 @@ def salva_diagnosi():
     print("📄 Riga da salvare:", new_row)
 
     try:
+        print(f"ID: {new_row['ID']}")
+        
         # Se il file non esiste, crea un nuovo DataFrame con intestazioni
         if os.path.exists(excel_file_path):
             df = pd.read_excel(excel_file_path)
@@ -136,11 +140,14 @@ def salva_diagnosi():
             ws.column_dimensions[col_letter].width = adjusted_width
 
         wb.save(excel_file_path)
+        
+        token = jwt.encode({'ID': new_row["ID"]}, jwt_secret, algorithm='HS256')
 
         print("💾 Dati scritti correttamente su", excel_file_path)
 
         return jsonify({
-            "message": "Dati salvati con successo"
+            "message": "Dati salvati con successo",
+            "token": token
         })
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
@@ -158,17 +165,29 @@ def ricevi_questionario():
         # Confronto robusto con datetime localizzato
         incoming_dt = parser.isoparse(data["datetime"]).astimezone(pytz.timezone("Europe/Rome"))
         incoming_str = incoming_dt.strftime("%Y-%m-%d %H:%M")
+        
+        prefix = 'Bearer '
+        
+        incoming_token = request.headers['Authorization'][len(prefix):]
+        
+        request_id = jwt.decode(incoming_token, jwt_secret, algorithms='HS256')["ID"]
+
+        print(f"ID: {request_id}")
 
         # Conversione della colonna Datetime
         df["Datetime"] = pd.to_datetime(df["Datetime"])
         excel_times = df["Datetime"].dt.strftime("%Y-%m-%d %H:%M")
         idx = excel_times[excel_times == incoming_str].index
+        
+        excel_ids = df["ID"]
+        
+        id_idx = excel_ids[excel_ids == request_id].index
 
         if len(idx) == 0:
             print("❌ Riga non trovata per datetime:", data["datetime"])
             return jsonify({"error": "Riga non trovata"}), 404
 
-        i = idx[0]
+        i = id_idx[0]
 
         df.at[i, "Q1"] = int(data.get("q1")) if data.get("q1") is not None else None
         df.at[i, "Q2"] = int(data.get("q2")) if data.get("q2") is not None else None
@@ -207,10 +226,13 @@ def model_predict():
         
         percent = round(float(result))       
         data['prediction'] = f"{percent}% Malignant"
-        salva_diagnosi()
+        save_response = salva_diagnosi().get_json()
+        
+        print(save_response)
         
         return jsonify({
             "message": f"case Predicted and Saved Succesfully!",
+            "token": save_response['token'],
             "prediction": str(percent),
             "backgroundColor": color
         }) 

@@ -1,12 +1,16 @@
 import pandas as pd
 import numpy as np
-from joblib import load
+from dotenv import load_dotenv
+import os
 import joblib
 from flexible_scaler import FlexibleScaler
 
-dt_model = joblib.load("./sito/DT.joblib")
-nb_model = joblib.load("./sito/NB.joblib")
-lr_model = joblib.load("./sito/LR.joblib")
+load_dotenv()
+
+dt_model = joblib.load(os.getenv('DT_PATH'))
+nb_model = joblib.load(os.getenv('NB_PATH'))
+lr_model = joblib.load(os.getenv('LR_PATH'))
+
 
 def blend_color(base_color, ratio):
     # base_color is (R, G, B)

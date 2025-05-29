@@ -2,38 +2,41 @@ window.onload = () => {
   // Popola il risultato nella pagina
 
   // Modifica la risposta in base alla percentuale
-	const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+	const prediction = sessionStorage.getItem("prediction") || null;
 
-  const match = rawPrediction.match(/(\d+)%/);  // cattura "23%" ovunque
+  //const match = rawPrediction.match(/(\d+)%/);  // cattura "23%" ovunque
+  // default se il formato del prediction non è valido 
+  // (alternativa: settare la logica del testo in backend)
   let displayPrediction = ":: Invalid prediction format ::";
+  let backgroundColor = "#FFFF00";
+  let textColor = "black";
 
-  if (match) {
-    const percent = parseInt(match[1]);
+  if (prediction && (prediction >= 0 && prediction <= 100)) {
+    backgroundColor = sessionStorage.getItem("predictionBackgroundColor");
+    textColor = sessionStorage.getItem("predictionColor");
 
-    if (percent < 5) {
+    if (prediction < 5) {
       displayPrediction = "Most Likely Benign";
-    } else if (percent < 45) {
+    } else if (prediction < 45) {
       displayPrediction = "Likely Benign";
-    } else if (percent <= 55) {
+    } else if (prediction <= 55) {
       displayPrediction = "Uncertain Case";
-    } else if (percent <= 95) {
+    } else if (prediction <= 95) {
       displayPrediction = "Likely Malignant";
     } else {
       displayPrediction = "Most Likely Malignant";
     }
-  } else {
-    displayPrediction = rawPrediction.replace(/\d+% /, "");  // fallback se non è presente la percentuale
   }
 
   document.getElementById("result").innerText = displayPrediction;
   
   // Nasconde la percentuale
-  /*const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+  /*const rawPrediction = sessionStorage.getItem("prediction") || ":: Nessun risultato ::";
   const cleanedPrediction = rawPrediction.replace(/\d+% /, "");  // rimuove "23% "
   document.getElementById("result").innerText = cleanedPrediction;*/
   
   // Randomizza la visualizzazione della percentuale
-  /*const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+  /*const rawPrediction = sessionStorage.getItem("prediction") || ":: Nessun risultato ::";
   const showPercentage = Math.random() < 0.5;
   const displayPrediction = showPercentage
     ? rawPrediction
@@ -41,11 +44,11 @@ window.onload = () => {
   document.getElementById("result").innerText = displayPrediction;*/
   
   //Mostra la percentuale
-  // document.getElementById("result").innerText = localStorage.getItem("prediction") || ":: Nessun risultato ::";
+  // document.getElementById("result").innerText = sessionStorage.getItem("prediction") || ":: Nessun risultato ::";
   
-  document.getElementById("result").style.backgroundColor = localStorage.getItem("predictionBackgroundColor") || "#f0f0f0";
-  document.getElementById("result").style.color = localStorage.getItem("predictionColor") || "black";
-  document.getElementById("selected-model").innerText = `Selected Model: ${localStorage.getItem("model") || "-"}`;
+  document.getElementById("result").style.backgroundColor = backgroundColor || "#f0f0f0";
+  document.getElementById("result").style.color = textColor || "black";
+  document.getElementById("selected-model").innerText = `Selected Model: ${sessionStorage.getItem("model") || "-"}`;
 
   // Listener per bottone Indietro
   const backBtn = document.getElementById("back-button");
@@ -69,7 +72,7 @@ window.onload = () => {
       const reason = String(document.getElementById("reason").value);
 
       const feedback = {
-        datetime: localStorage.getItem("datetime"),
+        datetime: sessionStorage.getItem("datetime"),
         q1: reliability,
         q2: usefulness,
         q3: influence,
@@ -80,7 +83,8 @@ window.onload = () => {
       fetch("/questionario", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionStorage.getItem("token")}`
         },
         body: JSON.stringify(feedback)
       })
