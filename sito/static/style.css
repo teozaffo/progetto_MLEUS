@@ -389,11 +389,7 @@ input[type="radio"] {
     padding: 1.25rem;
     max-width: 98%; /* aumenta l'area usata su mobile */
   }
-<<<<<<< HEAD
-
-=======
   
->>>>>>> main
   .info-icon-desktop {
     display: none
   }
