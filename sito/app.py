@@ -20,36 +20,6 @@ load_dotenv()
 
 excel_file_path = os.getenv('EXCEL_FILE')
 
-'''
-columns = [
-    "Datetime",
-    "Ip Address",
-    "Model",
-    "Hospital Center",
-    "Protocol Code",
-    "Age",
-    "Sex",
-    "Max Dim",
-    "Min Dim",
-    "Veinous Inf",
-    "Arterious Inf",
-    "Duct Ret/Ductal Inv",
-    "Vessel Comp",
-    "Lymphadenopathy",
-    "Reg Margins",
-    "Echogenicity",
-    "Mult Lesions",
-    "Prediction"
-]
-
-if os.path.exists(excel_file_path_path):
-    excel_df = pd.read_excel(excel_file_path_path)
-    print("📂 File Excel trovato con", len(df), "righe")
-else:
-    excel_df = pd.DataFrame(columns=columns)
-    print("📁 File non trovato, ne creo uno nuovo con intestazioni")
-'''
-
 
 @app.route("/")
 def index():
@@ -183,41 +153,3 @@ def ricevi_questionario():
     except Exception as e:
         print("❌ Errore durante il salvataggio del questionario:", str(e))
         return jsonify({"error": str(e)}), 500
-
-'''
-@app.route("/model_predict", methods=["POST"])
-def model_predict():
-    data = request.get_json()
-    try :
-        result, color = predict_input(data)
-        
-        percent = round(float(result))     
-        data['prediction'] = f"{percent}% Malignant"
-        
-        salva_diagnosi()
-        
-        text_prediction = ""
-        
-        if percent < 5:
-            text_prediction = "Most Likely Benign"
-        elif percent < 45:
-            text_prediction = "Likely Benign"
-        elif percent <= 55:
-            text_prediction = "Uncertain Case"
-        elif percent <= 95:
-            text_prediction = "Likely Malignant"
-        else:
-            text_prediction = "Most Likely Malignant"
-        
-        text_color = "white" if percent <= 25 or percent >= 75 else "black"
-        
-        return jsonify({
-            "message": f"case Predicted and Saved Succesfully!",
-            "prediction": text_prediction,
-            "backgroundColor": color,
-            "textColor": text_color
-        }) 
-    except Exception as e:
-        print(f"Encountered Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-'''

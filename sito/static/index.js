@@ -254,30 +254,6 @@ const setPredictionLogicBE = async () => {
 
   await window.predict(formData);
 
-  /*
-  const predict = await pyscript.interpreter.globals.get("predict")
-
-  const result = predict(formData)
-
-  console.log(result)
-  
-  if (!result || !result.prediction) {
-    console.error("Errore: nessuna previsione ricevuta dal server.");
-    return;
-  }
-
-  sessionStorage.setItem("model", currModel);
-  sessionStorage.setItem("prediction", result.prediction);
-  sessionStorage.setItem("predictionBackgroundColor", result.backgroundColor);
-  sessionStorage.setItem("predictionColor", result.textColor);
-
-  window.location.href = "/prediction";
-
-  */
-
-  //const errorDiv = document.getElementById('error');
-
-  //errorDiv.innerText = '';
 };
 
 window.onload = () => {
