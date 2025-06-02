@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
-from dotenv import load_dotenv
-import os
 import joblib
 from flexible_scaler import FlexibleScaler
+import json
+import js
+import pyscript
+from pyodide.http import pyfetch
 
-load_dotenv()
-
-dt_model = joblib.load(os.getenv('DT_PATH'))
-nb_model = joblib.load(os.getenv('NB_PATH'))
-lr_model = joblib.load(os.getenv('LR_PATH'))
+dt_model = joblib.load("./models/DT.joblib")
+nb_model = joblib.load("./models/NB.joblib")
+lr_model = joblib.load("./models/LR.joblib")
 
 
 def blend_color(base_color, ratio):
@@ -54,8 +54,55 @@ def predict_input(data):
   print("%.2f" % clf_prediction)
   print("----------")
   
-  return "%.2f" % clf_prediction, color
+  return round(clf_prediction), color
 
+async def get_frontend_resources_from_prediction(formData):
+  data = json.loads(formData)
+  
+  result, color = predict_input(data)
+  
+  text_prediction = ""
+  
+  data['prediction'] = f"{result}% Malignant"
+  
+  if result < 5:
+      text_prediction = "Most Likely Benign"
+  elif result < 45:
+      text_prediction = "Likely Benign"
+  elif result <= 55:
+      text_prediction = "Uncertain Case"
+  elif result <= 95:
+      text_prediction = "Likely Malignant"
+  else:
+      text_prediction = "Most Likely Malignant"
+  
+  text_color = "white" if result <= 25 or result >= 75 else "black"
+  
+  try:
+    
+    response = await pyfetch(
+      url="/salva",
+      method="POST",
+      headers={"Content-Type": "application/json"},
+      body=json.dumps(data)
+    )
+    result = await response.json()
+    js.console.log("Risposta del server:", result)
+  except Exception as e:
+    
+    js.console.error("Errore nell'invio al server:", e)
+  
+  js.sessionStorage.setItem("model", data['model'])
+  js.sessionStorage.setItem("prediction", text_prediction)
+  js.sessionStorage.setItem("predictionBackgroundColor", color)
+  js.sessionStorage.setItem("predictionColor", text_color)
+  
+  js.window.location.href = "/prediction"
+  
+  
+  
+  
+  
 def parse_LR_input(data):
   df = pd.DataFrame({
     'age': data['age'],
@@ -109,3 +156,7 @@ def parse_DT_input(data):
   }, index=[0])
   
   return df
+
+
+js_function = pyscript.ffi.create_proxy(get_frontend_resources_from_prediction)
+js.window.predict = js_function

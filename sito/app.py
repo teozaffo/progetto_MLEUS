@@ -6,10 +6,7 @@ from flask_cors import CORS
 import pandas as pd
 import os
 import json
-import uuid
-import jwt
 from datetime import datetime
-from model_prediction import predict_input
 import pytz
 from openpyxl import load_workbook, Workbook
 from dateutil import parser
@@ -22,7 +19,6 @@ CORS(app)
 load_dotenv()
 
 excel_file_path = os.getenv('EXCEL_FILE')
-jwt_secret = os.getenv('JWT_SECRET')
 
 '''
 columns = [
@@ -63,20 +59,11 @@ def index():
 def home():
     return "✅ Server Flask attivo su PythonAnywhere!"
     
-
 @app.route("/prediction")
 def prediction():
     print("now at prediction")
     return render_template("prediction.html")
 
-
-@app.route("/prediction")
-def show_prediction():
-    print("now at prediction")
-    return render_template("prediction.html")
-
-
-# Route per salvare i dati nel file Excel
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
     data = request.get_json()
@@ -84,7 +71,6 @@ def salva_diagnosi():
 
     # Costruisci la nuova riga da salvare
     new_row = {
-        "ID": str(uuid.uuid4()),
         "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
         "Ip Address": data.get("ip", request.remote_addr),
         "Model": data.get("model", "unknown"),
@@ -102,14 +88,12 @@ def salva_diagnosi():
         "Reg Margins": data.get("Margins"),
         "Echogenicity": data.get("Ecostructure"),
         "Mult Lesions": data.get("Multiple"),
-        "Prediction": data.get("prediction") 
+        "Prediction": data.get("prediction")
     }
 
     print("📄 Riga da salvare:", new_row)
 
     try:
-        print(f"ID: {new_row['ID']}")
-        
         # Se il file non esiste, crea un nuovo DataFrame con intestazioni
         if os.path.exists(excel_file_path):
             df = pd.read_excel(excel_file_path)
@@ -140,19 +124,13 @@ def salva_diagnosi():
             ws.column_dimensions[col_letter].width = adjusted_width
 
         wb.save(excel_file_path)
-        
-        token = jwt.encode({'ID': new_row["ID"]}, jwt_secret, algorithm='HS256')
 
         print("💾 Dati scritti correttamente su", excel_file_path)
 
-        return jsonify({
-            "message": "Dati salvati con successo",
-            "token": token
-        })
+        return jsonify({"message": "Dati salvati con successo"})
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
-
     
 @app.route("/questionario", methods=["POST"])
 def ricevi_questionario():
@@ -165,29 +143,17 @@ def ricevi_questionario():
         # Confronto robusto con datetime localizzato
         incoming_dt = parser.isoparse(data["datetime"]).astimezone(pytz.timezone("Europe/Rome"))
         incoming_str = incoming_dt.strftime("%Y-%m-%d %H:%M")
-        
-        prefix = 'Bearer '
-        
-        incoming_token = request.headers['Authorization'][len(prefix):]
-        
-        request_id = jwt.decode(incoming_token, jwt_secret, algorithms='HS256')["ID"]
-
-        print(f"ID: {request_id}")
 
         # Conversione della colonna Datetime
         df["Datetime"] = pd.to_datetime(df["Datetime"])
         excel_times = df["Datetime"].dt.strftime("%Y-%m-%d %H:%M")
         idx = excel_times[excel_times == incoming_str].index
-        
-        excel_ids = df["ID"]
-        
-        id_idx = excel_ids[excel_ids == request_id].index
 
         if len(idx) == 0:
             print("❌ Riga non trovata per datetime:", data["datetime"])
             return jsonify({"error": "Riga non trovata"}), 404
 
-        i = id_idx[0]
+        i = idx[0]
 
         df.at[i, "Q1"] = int(data.get("q1")) if data.get("q1") is not None else None
         df.at[i, "Q2"] = int(data.get("q2")) if data.get("q2") is not None else None
@@ -218,24 +184,40 @@ def ricevi_questionario():
         print("❌ Errore durante il salvataggio del questionario:", str(e))
         return jsonify({"error": str(e)}), 500
 
+'''
 @app.route("/model_predict", methods=["POST"])
 def model_predict():
     data = request.get_json()
     try :
         result, color = predict_input(data)
         
-        percent = round(float(result))       
+        percent = round(float(result))     
         data['prediction'] = f"{percent}% Malignant"
-        save_response = salva_diagnosi().get_json()
         
-        print(save_response)
+        salva_diagnosi()
+        
+        text_prediction = ""
+        
+        if percent < 5:
+            text_prediction = "Most Likely Benign"
+        elif percent < 45:
+            text_prediction = "Likely Benign"
+        elif percent <= 55:
+            text_prediction = "Uncertain Case"
+        elif percent <= 95:
+            text_prediction = "Likely Malignant"
+        else:
+            text_prediction = "Most Likely Malignant"
+        
+        text_color = "white" if percent <= 25 or percent >= 75 else "black"
         
         return jsonify({
             "message": f"case Predicted and Saved Succesfully!",
-            "token": save_response['token'],
-            "prediction": str(percent),
-            "backgroundColor": color
+            "prediction": text_prediction,
+            "backgroundColor": color,
+            "textColor": text_color
         }) 
     except Exception as e:
         print(f"Encountered Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+'''

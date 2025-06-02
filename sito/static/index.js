@@ -15,7 +15,10 @@ const allFeatures = [
   'Multiple',
 ];
 
+let formData = {};
+
 document.addEventListener('DOMContentLoaded', function () {
+
   document
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
@@ -236,8 +239,9 @@ const sendToServer = async (data) => {
   }
 }
 
+
 const setPredictionLogicBE = async () => {
-  const formData = parseFormData();
+  formData = JSON.stringify(parseFormData());
   sessionStorage.setItem("datetime", formData.datetime);
 
   try {
@@ -248,22 +252,28 @@ const setPredictionLogicBE = async () => {
     formData.ip = "IP non disponibile";
   }
 
-  const result = await predictFromServer(formData);
+  await window.predict(formData);
+
+  /*
+  const predict = await pyscript.interpreter.globals.get("predict")
+
+  const result = predict(formData)
+
+  console.log(result)
   
   if (!result || !result.prediction) {
     console.error("Errore: nessuna previsione ricevuta dal server.");
     return;
   }
 
-  const percent = result.prediction;
-
   sessionStorage.setItem("model", currModel);
-  sessionStorage.setItem("prediction", parseInt(percent));
+  sessionStorage.setItem("prediction", result.prediction);
   sessionStorage.setItem("predictionBackgroundColor", result.backgroundColor);
-  sessionStorage.setItem("predictionColor", percent <= 25 || percent >= 75 ? "white" : "black");
-  sessionStorage.setItem("token", result.token)
+  sessionStorage.setItem("predictionColor", result.textColor);
 
   window.location.href = "/prediction";
+
+  */
 
   //const errorDiv = document.getElementById('error');
 

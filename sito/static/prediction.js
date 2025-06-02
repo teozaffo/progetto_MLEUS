@@ -2,31 +2,13 @@ window.onload = () => {
   // Popola il risultato nella pagina
 
   // Modifica la risposta in base alla percentuale
-	const prediction = sessionStorage.getItem("prediction") || null;
 
   //const match = rawPrediction.match(/(\d+)%/);  // cattura "23%" ovunque
   // default se il formato del prediction non è valido 
   // (alternativa: settare la logica del testo in backend)
-  let displayPrediction = ":: Invalid prediction format ::";
-  let backgroundColor = "#FFFF00";
-  let textColor = "black";
-
-  if (prediction && (prediction >= 0 && prediction <= 100)) {
-    backgroundColor = sessionStorage.getItem("predictionBackgroundColor");
-    textColor = sessionStorage.getItem("predictionColor");
-
-    if (prediction < 5) {
-      displayPrediction = "Most Likely Benign";
-    } else if (prediction < 45) {
-      displayPrediction = "Likely Benign";
-    } else if (prediction <= 55) {
-      displayPrediction = "Uncertain Case";
-    } else if (prediction <= 95) {
-      displayPrediction = "Likely Malignant";
-    } else {
-      displayPrediction = "Most Likely Malignant";
-    }
-  }
+  const displayPrediction = sessionStorage.getItem("prediction");
+  const backgroundColor = sessionStorage.getItem("predictionBackgroundColor");
+  const textColor = sessionStorage.getItem("predictionColor");
 
   document.getElementById("result").innerText = displayPrediction;
   
@@ -83,8 +65,7 @@ window.onload = () => {
       fetch("/questionario", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(feedback)
       })
