@@ -151,7 +151,7 @@ function validateMandatoryFields() {
   const mandatoryElements = document.querySelectorAll('.mandatory');
   let missingFields = [];
 
-  mandatoryElements.forEach(elem => {
+   mandatoryElements.forEach(elem => {
     const id = elem.id;
     const value = document.getElementById(id).value;
 
@@ -251,6 +251,7 @@ const setPredictionLogicBE = async () => {
   } catch (e) {
     formData.ip = "IP non disponibile";
   }
+  
 
   await window.predict(formData);
 
