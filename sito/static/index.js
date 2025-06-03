@@ -17,6 +17,24 @@ const allFeatures = [
 
 let formData = {};
 
+window.addEventListener("py:ready", () => {
+  console.log("interpreter Finished!!")
+  document.getElementById("loader-text").textContent = "Scanning Files Fetched...";
+})
+
+window.addEventListener("py:all-done", () => {
+  console.log("All done!");
+  document.getElementById("loader-text").textContent = "All Done!";
+  document.querySelector(".loader").classList.add("paused");
+
+  setTimeout(() => {
+    console.log("in tiemout")
+
+    document.querySelector(".loader-container").style.display = "none";
+    document.querySelector(".container").hidden = false;
+  }, 1000);
+})
+
 document.addEventListener('DOMContentLoaded', function () {
   document
     .getElementById("predictButton")
@@ -180,6 +198,8 @@ const setPredictionLogicBE = async () => {
 };
 
 window.onload = () => {
+  document.querySelector(".container").hidden = true;
+
   // Pulisce tutti i campi di input e select
   const fieldsToReset = [
     'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilatation',

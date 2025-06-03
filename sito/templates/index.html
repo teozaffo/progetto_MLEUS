@@ -13,6 +13,10 @@
   <link rel="stylesheet" href="https://pyscript.net/releases/2025.5.1/core.css">
   <script defer type="module" src="https://pyscript.net/releases/2025.5.1/core.js"></script>
 
+  <link rel="prefetch" href="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js" as="script">
+  <link rel="prefetch" href="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.asm.wasm" as="fetch">
+
+
   <link rel="stylesheet" href="https://pyscript.net/releases/2025.5.1/core.css">
   <script defer type="module" src="https://pyscript.net/releases/2025.5.1/core.js"></script>
 
@@ -26,9 +30,12 @@
 
 <body>
 
-  <script type="py" src="../static/model_prediction.py" config="../static/pyscript.toml"></script>
+  <div class="loader-container">
+    <span id="loader-text">Loading Python Packages...</span>
+    <div class="loader"></div>
+  </div>
 
-  <div class="container">
+  <div class="container" hidden>
 
     <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
@@ -643,6 +650,8 @@
     <div class="error" id="error"></div>
 
   </div>
+
+  <script defer type="py" src="../static/model_prediction.py" config="../static/pyscript.toml"></script>
   
 </body>
 

@@ -11,3 +11,5 @@ files = [
   "/models/DT.joblib",
   "/models/RF.joblib"
 ]
+
+sync_main_only = true
