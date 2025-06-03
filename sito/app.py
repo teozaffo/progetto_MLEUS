@@ -18,16 +18,17 @@ CORS(app)
 
 load_dotenv()
 
-excel_file_path = os.getenv('EXCEL_FILE')
+excel_file_path = "./diagnosi.xlsx"
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/")
-def home():
-    return "✅ Server Flask attivo su PythonAnywhere!"
+# Route per lo stato del server
+@app.route("/status")
+def status():
+    return "✅ Server Flask attivo e funzionante!"
     
 @app.route("/prediction")
 def prediction():
@@ -128,7 +129,10 @@ def salva_diagnosi():
 
         print("💾 Dati scritti correttamente su", excel_file_path)
 
-        return jsonify({"message": "Dati salvati con successo"})
+        return jsonify({
+            "message": "Dati salvati con successo",
+            "datetime": new_row["Datetime"]
+        })
     except Exception as e:
         print("❌ Errore nella scrittura su Excel:", str(e))
         return jsonify({"error": str(e)}), 500
@@ -184,3 +188,9 @@ def ricevi_questionario():
     except Exception as e:
         print("❌ Errore durante il salvataggio del questionario:", str(e))
         return jsonify({"error": str(e)}), 500
+        
+    
+    # Avvia il server
+if __name__ == "__main__":
+    print("🚀 Server Flask in esecuzione...")
+    app.run(debug=True)

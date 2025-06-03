@@ -56,7 +56,7 @@ def predict_input(data):
   return round(clf_prediction), color
 
 async def get_frontend_resources_from_prediction(formData):
-  data = json.loads(formData)
+  data = formData.to_py()
   
   result, color = predict_input(data)
   

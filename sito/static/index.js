@@ -18,7 +18,6 @@ const allFeatures = [
 let formData = {};
 
 document.addEventListener('DOMContentLoaded', function () {
-
   document
     .getElementById("predictButton")
     .addEventListener("click", () => predictClass());
@@ -91,7 +90,7 @@ function validateMandatoryFields() {
   const mandatoryElements = document.querySelectorAll('.mandatory');
   let missingFields = [];
 
-  mandatoryElements.forEach(elem => {
+   mandatoryElements.forEach(elem => {
     const id = elem.id;
     const value = document.getElementById(id).value;
 
@@ -168,8 +167,8 @@ const sendToServer = async (data) => {
 
 
 const setPredictionLogicBE = async () => {
-  formData = JSON.stringify(parseFormData());
-  sessionStorage.setItem("datetime", formData.datetime);
+	formData = parseFormData(); // tienilo oggetto
+	sessionStorage.setItem("datetime", formData.datetime);
 
   try {
     const res = await fetch('https://api.ipify.org?format=json');
