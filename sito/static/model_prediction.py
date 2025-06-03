@@ -95,6 +95,7 @@ async def get_frontend_resources_from_prediction(formData):
   js.sessionStorage.setItem("prediction", text_prediction)
   js.sessionStorage.setItem("predictionBackgroundColor", color)
   js.sessionStorage.setItem("predictionColor", text_color)
+  js.sessionStorage.setItem("predictionPercent", data['prediction'])
   
   js.window.location.href = "/prediction"
   

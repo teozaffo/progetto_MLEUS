@@ -37,8 +37,7 @@ const addEventListenersForModelButtons = (model, models) => {
   document.getElementById(model).addEventListener("click", () => {
     document.getElementById("inputForm").hidden = false;
 
-    document.getElementById(model).style.backgroundColor = "#007bff";
-    document.getElementById(model).style.color = "white";
+    document.getElementById(model).classList.add("clicked")
 	
 	  currModel = model;
 
@@ -52,9 +51,7 @@ const addEventListenersForModelButtons = (model, models) => {
 
     models.map(innerModel => {
       if (innerModel !== model) {
-        document.getElementById(innerModel).style.color = "black";
-        document.getElementById(innerModel).style.backgroundColor = "white";
-        document.getElementById(innerModel).style.borderColor = "#007bff";
+        document.getElementById(innerModel).classList.remove("clicked")
       }
     });
 	

@@ -215,6 +215,11 @@ input[type="radio"] {
   color: white;
 }
 
+.clicked {
+  background-color: #007bff;
+  color: white;
+} 
+
 .information {
   font-weight: bold;
   color: red;
