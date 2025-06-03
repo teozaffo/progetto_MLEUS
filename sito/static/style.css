@@ -189,15 +189,15 @@ input[type="radio"] {
 
 .btn-group {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap; /* ⛔ non andare a capo */
+  justify-content: center;
+  flex-wrap: row;
   gap: 6px;
   margin-top: 1rem;
 }
 
 .model-btn {
   flex: 1;
-  max-width: 33%;
+  max-width: 40%;
   min-width: 80px;
   padding: 8px 10px;
   font-size: 14px;

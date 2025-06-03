@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById("inputForm").hidden = true;
 
-  const models = ["DT", "NB", "LR"];
+  const models = ["DT", "RF"];
 
   models.forEach(model => {
     addEventListenersForModelButtons(model, models);
@@ -68,17 +68,6 @@ const addEventListenersForModelButtons = (model, models) => {
 }
 
 const setMandatoryFeatures = (model) => {
-
-  if (model === "DT") {
-    setMandatoryFeaturesDT();
-  } else if (model === "NB") {
-    setMandatoryFeaturesNB();
-  } else {
-    setMandatoryFeaturesLR();
-  }
-}
-
-const setMandatoryFeaturesDT = () => {
   const mandatoryFeaturesDT = [
     'Lymphadenopathy',
     'DuctRetrodilatation', 
@@ -89,55 +78,6 @@ const setMandatoryFeaturesDT = () => {
 
   allFeatures.map(feature => {
     if (mandatoryFeaturesDT.includes(feature)) {
-      document.getElementById(`${feature}-feature`).style.display = "";
-      document.getElementById(feature).classList.add("mandatory");
-    } else {
-      document.getElementById(`${feature}-feature`).style.display = "none";
-      document.getElementById(feature).classList.remove("mandatory");
-    }
-  });
-  
-}
-
-const setMandatoryFeaturesNB = () => {
-  const mandatoryFeaturesNB = [
-    'Age', 
-    'Dim1', 
-    'Dim2', 
-    'Lymphadenopathy', 
-    'DuctRetrodilatation', 
-    'VesselCompression', 
-    'Ecostructure', 
-    'Margins', 
-  ];
-
-  allFeatures.map(feature => {
-    if (mandatoryFeaturesNB.includes(feature)) {
-      document.getElementById(`${feature}-feature`).style.display = "";
-      document.getElementById(feature).classList.add("mandatory");
-    } else {
-      document.getElementById(`${feature}-feature`).style.display = "none";
-      document.getElementById(feature).classList.remove("mandatory");
-    }
-  });
-}
-
-const setMandatoryFeaturesLR = () => {
-  const mandatoryFeaturesLR = [
-    'Age',
-    'Dim1', 
-    'Dim2', 
-    'Lymphadenopathy', 
-    'DuctRetrodilatation', 
-    'Arteries', 
-    'VesselCompression', 
-    'Ecostructure', 
-    'Margins', 
-    'Multiple',  
-  ];
-
-  allFeatures.map(feature => {
-    if (mandatoryFeaturesLR.includes(feature)) {
       document.getElementById(`${feature}-feature`).style.display = "";
       document.getElementById(feature).classList.add("mandatory");
     } else {
@@ -211,19 +151,6 @@ const parseFormData = (result) => {
     ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
     prediction: result,
   };
-}
-
-const predictFromServer = async (data) => {
-  try {
-    const response = await fetch(`/model_predict`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  } catch (error) {
-    console.error("Errore nell'invio al server:", error);
-  }
 }
 
 const sendToServer = async (data) => {

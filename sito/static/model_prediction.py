@@ -8,8 +8,7 @@ import pyscript
 from pyodide.http import pyfetch
 
 dt_model = joblib.load("./models/DT.joblib")
-nb_model = joblib.load("./models/NB.joblib")
-lr_model = joblib.load("./models/LR.joblib")
+rf_model = joblib.load("./models/RF.joblib")
 
 
 def blend_color(base_color, ratio):
@@ -34,17 +33,17 @@ def get_color(ratio):
         return blend_color((0, 0, 255), strength)
 
 def predict_input(data):
-  if data['model'] == "LR":
-    df = parse_LR_input(data)
-    clf = lr_model
-  elif data['model'] == "NB":
-    df = parse_NB_input(data)
-    clf = nb_model
-  elif data['model'] == "DT":
-    df = parse_DT_input(data)
+  if data['model'] == "DT":
     clf = dt_model
+  elif data['model'] == "RF":
+    clf = rf_model
+    
   else:
-    raise Exception("Invalid Input Model, must be DT, NB or LR")
+    raise Exception("Invalid Input Model, must be DT or RF")
+  
+  df = parse_input(data=data)
+  
+
 
   clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
   
@@ -99,47 +98,8 @@ async def get_frontend_resources_from_prediction(formData):
   
   js.window.location.href = "/prediction"
   
-  
-  
-  
-  
-def parse_LR_input(data):
-  df = pd.DataFrame({
-    'age': data['age'],
-    'sex': data['sex'] if data['sex'] is not None else np.nan,
-    'Dim1': data['Dim1'],
-    'Dim2': data['Dim2'],
-    'Lymphadenopathy': data['Lymphadenopathy'],
-    'DuctRetrodilation': data['DuctRetrodilatation'],
-    'Arteries': data['Arteries'],
-    'Veins': data['Veins'] if data['Veins'] is not None else np.nan,
-    'VesselCompression': data['VesselCompression'],
-    'Ecostructure': data['Ecostructure'],
-    'Margins': data['Margins'],
-    'Multiple': data['Multiple']
-  }, index=[0])
 
-  return df
-
-def parse_NB_input(data):
-  df = pd.DataFrame({
-    'age': data['age'],
-    'sex': data['sex'] if data['sex'] is not None else np.nan,
-    'Dim1': data['Dim1'],
-    'Dim2': data['Dim2'],
-    'Lymphadenopathy': data['Lymphadenopathy'],
-    'DuctRetrodilation': data['DuctRetrodilatation'],
-    'Arteries': data['Arteries'] if data['Arteries'] is not None else np.nan,
-    'Veins': data['Veins'] if data['Veins'] is not None else np.nan,
-    'VesselCompression': data['VesselCompression'],
-    'Ecostructure': data['Ecostructure'],
-    'Margins': data['Margins'],
-    'Multiple': data['Multiple'] if data['Multiple'] is not None else np.nan
-  }, index=[0])
-  
-  return df
-
-def parse_DT_input(data):
+def parse_input(data):
   df = pd.DataFrame({
     'age': data['age'] if data['age'] is not None else np.nan,
     'sex': data['sex'] if data['sex'] is not None else np.nan,

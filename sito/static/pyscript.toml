@@ -9,6 +9,5 @@ packages = [
 files = [
   "/flexible_scaler.py",
   "/models/DT.joblib",
-  "/models/NB.joblib",
-  "/models/LR.joblib"
+  "/models/RF.joblib"
 ]

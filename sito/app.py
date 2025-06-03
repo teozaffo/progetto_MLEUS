@@ -1,7 +1,7 @@
 # app.py
 from openpyxl import load_workbook
 import pytz
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import pandas as pd
 import os
@@ -33,6 +33,37 @@ def home():
 def prediction():
     print("now at prediction")
     return render_template("prediction.html")
+
+@app.route("/static/pyscript.toml", methods=['GET'])
+def send_and_cache_pyscript():
+    response = send_from_directory('static', './pyscript.toml')
+    response.headers['Cache-Control'] = 'public, max-age=86400'  
+    return response
+
+@app.route("/static/flexible_scaler.py", methods=['GET'])
+def send_and_cache_flexible_scaler():
+    response = send_from_directory('static', './flexible_scaler.py')
+    response.headers['Cache-Control'] = 'public, max-age=86400' 
+    return response
+
+@app.route("/static/model_prediction.py", methods=['GET'])
+def send_and_cache_model_prediction():
+    response = send_from_directory('static', './model_prediction.py')
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    return response
+
+@app.route("/static/models/DT.joblib", methods=['GET'])
+def send_and_cache_DT_model():
+    response = send_from_directory('static', './models/DT.joblib')
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    return response
+
+@app.route("/static/models/RF.joblib", methods=['GET'])
+def send_and_cache_RF_model():
+    response = send_from_directory('static', './models/RF.joblib')
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    return response
+    
 
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
