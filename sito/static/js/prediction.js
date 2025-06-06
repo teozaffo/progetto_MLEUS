@@ -59,6 +59,13 @@ window.onload = () => {
   // Listener per invio del form feedback
   const form = document.getElementById("feedback");
 
+  document.getElementById("show-DT-button").addEventListener("click", () => showDT());
+  
+  document.getElementById("DT-Modal").addEventListener("click", () => closeDT());
+
+  document.getElementById("inner-modal").addEventListener("click", (event) => preventEventPropagationForDTModal(event));
+
+
   if (form) {
     form.addEventListener("submit", function(event) {
       event.preventDefault();
@@ -104,4 +111,19 @@ window.onload = () => {
   }
 }
 
+
+const showDT = () => {
+  document.getElementsByClassName("modal")[0].style.display = "block";
+}
+
+const closeDT = () => {
+  document.getElementsByClassName("modal")[0].style.display = "none"
+}
+
+const preventEventPropagationForDTModal = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+  return false;
+}
 

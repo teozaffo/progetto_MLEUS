@@ -10,9 +10,6 @@ from pyodide.http import pyfetch
 dt_model = joblib.load("./models/DT.joblib")
 rf_model = joblib.load("./models/RF.joblib")
 
-print(f"dt model: {dt_model}")
-print(f"rf model: {rf_model}")
-
 feature_names = [
   'age',
   'sex',

@@ -29,6 +29,11 @@ const showFeedbackContainer = () => {
 
   if (inputForm) inputForm.reset();
 
+  checkAndHandleIfPredictorIsDT()
+
+  const confirmation = document.getElementById("feedback-confirmation");
+  confirmation.innerText = "";
+
   document.getElementById("predictor-container").hidden = true;
   document.getElementById("feedback-container").hidden = false;
 }
@@ -41,4 +46,12 @@ const resetPredictionForm = () => {
   })
 
   document.getElementById("inputForm").hidden = true;
-} 
+}
+
+const checkAndHandleIfPredictorIsDT = () => {
+  if (sessionStorage.getItem("model") === "DT") {
+    document.getElementById("show-DT-button").style.display = "block";
+  } else {
+    document.getElementById("show-DT-button").style.display = "none";
+  }
+}

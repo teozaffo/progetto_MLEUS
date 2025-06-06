@@ -140,7 +140,7 @@ const setMandatoryFeatures = (model) => {
   const mandatoryFeaturesDT = [
     'Lymphadenopathy',
     'DuctRetrodilation', 
-    'VesselCompression', 
+    'Arteries', 
     'Ecostructure', 
     'Margins',
   ];
