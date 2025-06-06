@@ -24,7 +24,10 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <script type="text/javascript" src="../static/index.js"></script>
+  <script type="module" src="../static/js/index.js"></script>
+  <script type="module" src="../static/js/prediction.js"></script>
+
+  <script type="module" src="../static/js/navigation.js"></script>
 
 </head>
 
@@ -35,7 +38,7 @@
     <div class="loader"></div>
   </div>
 
-  <div class="container" hidden>
+  <div class="container" id="predictor-container" hidden>
 
     <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
@@ -286,12 +289,12 @@
         </div>
       </div>
 
-      <div class="feature" id="DuctRetrodilatation-feature">
+      <div class="feature" id="DuctRetrodilation-feature">
         <input type="checkbox" id="infoToggle-Duct" class="info-toggle">
-        <div class="form-row" id="DuctRetrodilatation-row">
+        <div class="form-row" id="DuctRetrodilation-row">
 
           <div class="label-group">
-            <label for="DuctRetrodilatation">Duct Retrodilatation, Ductal Invasion</label>
+            <label for="DuctRetrodilation">Duct Retrodilatation, Ductal Invasion</label>
             <label class="info-icon-desktop">
               <span class="icon-wrapper">
                 <i class="fa-regular fa-circle-question fa-2xs"></i>
@@ -310,7 +313,7 @@
             </label>
           </div>
 
-          <select id="DuctRetrodilatation">
+          <select id="DuctRetrodilation">
 
             <option value="0" selected>False</option>
 
@@ -651,7 +654,148 @@
 
   </div>
 
-  <script defer type="py" src="../static/model_prediction.py" config="../static/pyscript.toml"></script>
+  <div class="container" id="feedback-container" hidden>
+      <h2>Prediction of the model</h2>
+      <h3 id="selected-model">Selected Model: </h3>
+
+      <div class="result" id="result"></div>
+
+      <div id="gradient-bar">
+        <div id="gradient-legend-benign">Benign</div>
+        <div id="gradient-legend-uncertain">Uncertain</div>
+        <div id="gradient-legend-malignant">Malignant</div>
+      </div>
+      
+      <br>
+
+      <h2 class="feedback">
+        Please give us your feedback:
+      </h2>
+      
+      <form class="feedback" id="feedback">
+        <label>
+          1. On a scale from 1 (not at all) to 4 (completely), how reliable do you consider this information?
+        </label><br>
+        <div class="radio-group dual-mode">
+          <div class="radio-row-desktop">
+            <label>not at all <input type="radio" name="reliability" value="1"></label>
+            <label><input type="radio" name="reliability" value="2"></label>
+            <label><input type="radio" name="reliability" value="3"></label>
+            <label><input type="radio" name="reliability" value="4"> completely</label>
+          </div>
+
+          <div class="radio-row-mobile">
+            <div class="radio-buttons">
+              <label><input type="radio" name="reliability" value="1"></label>
+              <label><input type="radio" name="reliability" value="2"></label>
+              <label><input type="radio" name="reliability" value="3"></label>
+              <label><input type="radio" name="reliability" value="4"></label>
+            </div>
+            <div class="radio-labels">
+              <span>not at all</span>
+              <span>completely</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <label>
+          2. On a scale from 1 (not at all) to 4 (completely), how useful do you find this tool?
+        </label><br>
+        <div class="radio-group dual-mode">
+          <div class="radio-row-desktop">
+            <label>not at all <input type="radio" name="usefulness" value="1"></label>
+            <label><input type="radio" name="usefulness" value="2"></label>
+            <label><input type="radio" name="usefulness" value="3"></label>
+            <label><input type="radio" name="usefulness" value="4"> completely</label>
+          </div>
+
+          <div class="radio-row-mobile">
+            <div class="radio-buttons">
+              <label><input type="radio" name="usefulness" value="1"></label>
+              <label><input type="radio" name="usefulness" value="2"></label>
+              <label><input type="radio" name="usefulness" value="3"></label>
+              <label><input type="radio" name="usefulness" value="4"></label>
+            </div>
+            <div class="radio-labels">
+              <span>not at all</span>
+              <span>completely</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <label>
+          3. On a scale from 1 (not at all) to 4 (completely), to what extent do you think this information will influence your upcoming decisions regarding reporting and prescribing?
+        </label><br>
+        <div class="radio-group dual-mode">
+          <div class="radio-row-desktop">
+            <label>not at all <input type="radio" name="influence" value="1"></label>
+            <label><input type="radio" name="influence" value="2"></label>
+            <label><input type="radio" name="influence" value="3"></label>
+            <label><input type="radio" name="influence" value="4"> completely</label>
+          </div>
+
+          <div class="radio-row-mobile">
+            <div class="radio-buttons">
+              <label><input type="radio" name="influence" value="1"></label>
+              <label><input type="radio" name="influence" value="2"></label>
+              <label><input type="radio" name="influence" value="3"></label>
+              <label><input type="radio" name="influence" value="4"></label>
+            </div>
+            <div class="radio-labels">
+              <span>not at all</span>
+              <span>completely</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+        <div class="form-row">
+          <label for="recommendability">
+            4. On a scale from 0 (impossible) to 10 (certain), how likely are you to recommend this tool to a colleague?
+          </label>
+
+          <select id="recommendability" class="optional">
+      
+            <option value="0">0 (Impossible)</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>            
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10 (Certain)</option>
+      
+          </select>
+        </div>
+
+		<div style="margin-top: 2rem;"></div>
+		
+        <label for="reason">5. Why?</label><br>
+        <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
+
+        <div class="button-row">
+			<button id="form-submit" type="submit">Send</button>
+			<button id="back-button" type="button">Back</button>
+		</div>
+		
+		<p id="feedback-confirmation" style="margin-top: 1rem; font-weight: bold; color: green;"></p>
+
+      </form>
+
+    </div>
+
+  <script defer type="py" src="../static/py/model_prediction.py" config="./pyscript.toml"></script>
   
 </body>
 

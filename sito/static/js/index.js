@@ -1,3 +1,5 @@
+import { navigateTo, handleRoute } from "./navigation.js";
+
 let currModel = "";
 
 const allFeatures = [
@@ -6,7 +8,7 @@ const allFeatures = [
   'Dim1', 
   'Dim2', 
   'Lymphadenopathy', 
-  'DuctRetrodilatation', 
+  'DuctRetrodilation', 
   'Arteries', 
   'Veins', 
   'VesselCompression', 
@@ -17,24 +19,77 @@ const allFeatures = [
 
 let formData = {};
 
+
+
+//on load handler:
+
+// on Load -> reset everything
+window.onload = () => {
+  document.querySelector(".container").hidden = true;
+
+  resetInputFields()
+}
+
+const resetInputFields = () => {
+  // Pulisce tutti i campi di input e select
+  const fieldsToReset = [
+    'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilation',
+    'VesselCompression', 'Lymphadenopathy', 'Margins', 'Ecostructure',
+    'Multiple', 'HospitalCenter', 'ProtocolCode'
+  ];
+  
+  fieldsToReset.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.tagName === "INPUT") el.value = "";
+    if (el.tagName === "SELECT") el.selectedIndex = 0;
+    el.style.backgroundColor = "white";
+  });
+
+  document.getElementById("error").innerText = "";
+  document.getElementById("validationError").innerText = "";
+
+}
+
+
+
+// handler for navigation between "pages"
+window.addEventListener('popstate', () => {
+  handleRoute(window.location.pathname);
+});
+
+
+
+// handlers for Pyscript events:
+
+
+// pyscript has been initialized and is ready to run Python code
+// some packages are being downloaded still, and some aren't finished
 window.addEventListener("py:ready", () => {
   console.log("interpreter Finished!!")
   document.getElementById("loader-text").textContent = "Scanning Files Fetched...";
 })
 
+// ALL Pyscript tasks are fully complete and the site is reactive
 window.addEventListener("py:all-done", () => {
   console.log("All done!");
   document.getElementById("loader-text").textContent = "All Done!";
   document.querySelector(".loader").classList.add("paused");
 
   setTimeout(() => {
-    console.log("in tiemout")
+    console.log("in timeout")
 
     document.querySelector(".loader-container").style.display = "none";
-    document.querySelector(".container").hidden = false;
-  }, 1000);
+    document.querySelector("#predictor-container").hidden = false;
+  }, 500);
 })
 
+
+
+
+// DOM event listeners for initialization (adding event listeners to some buttons etc..):
+
+// event listeners for initialization
 document.addEventListener('DOMContentLoaded', function () {
   document
     .getElementById("predictButton")
@@ -46,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   models.forEach(model => {
     addEventListenersForModelButtons(model, models);
-	
   });
+
   document.getElementById("inputForm").reset();
 });
 
@@ -84,7 +139,7 @@ const addEventListenersForModelButtons = (model, models) => {
 const setMandatoryFeatures = (model) => {
   const mandatoryFeaturesDT = [
     'Lymphadenopathy',
-    'DuctRetrodilatation', 
+    'DuctRetrodilation', 
     'VesselCompression', 
     'Ecostructure', 
     'Margins',
@@ -101,24 +156,35 @@ const setMandatoryFeatures = (model) => {
   });
 }
 
-function validateMandatoryFields() {
-  const mandatoryElements = document.querySelectorAll('.mandatory');
-  let missingFields = [];
 
-   mandatoryElements.forEach(elem => {
-    const id = elem.id;
-    const value = document.getElementById(id).value;
 
-    // Considera vuoto anche "NaN" o stringa vuota per i numerici
-    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
-      missingFields.push(id);
-    }
-  });
 
-  return missingFields;
+
+// logic for sending the data to prediction logic:
+
+const parseFormData = (result) => {
+  return {
+    model: currModel,
+    datetime: new Date().toISOString(),
+    age: parseInt(document.getElementById('Age').value),
+    sex: parseInt(document.getElementById('Sex').value),
+    Dim1: parseInt(document.getElementById('Dim1').value),
+    Dim2: parseInt(document.getElementById('Dim2').value),
+    Veins: parseInt(document.getElementById('Veins').value),
+    Arteries: parseInt(document.getElementById('Arteries').value),   
+    DuctRetrodilation: parseInt(document.getElementById('DuctRetrodilation').value),
+    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
+    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
+    Margins: parseInt(document.getElementById('Margins').value),
+    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
+    Multiple: parseInt(document.getElementById('Multiple').value),
+    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
+    ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
+    prediction: result,
+  };
 }
 
-const predictClass = () => {
+const predictClass = async () => {
   // 🔄 Ripristina colore bianco a tutti i campi
   allFeatures.forEach(id => {
 	document.getElementById(id).style.backgroundColor = "white";
@@ -142,45 +208,29 @@ const predictClass = () => {
 	return;
   }
   
-  setPredictionLogicBE();
+  await setPredictionLogicBE();
+
+  navigateTo('/prediction');
 }
 
-const parseFormData = (result) => {
-  return {
-    model: currModel,
-    datetime: new Date().toISOString(),
-    age: parseInt(document.getElementById('Age').value),
-    sex: parseInt(document.getElementById('Sex').value),
-    Dim1: parseInt(document.getElementById('Dim1').value),
-    Dim2: parseInt(document.getElementById('Dim2').value),
-    Veins: parseInt(document.getElementById('Veins').value),
-    Arteries: parseInt(document.getElementById('Arteries').value),   
-    DuctRetrodilatation: parseInt(document.getElementById('DuctRetrodilatation').value),
-    VesselCompression: parseInt(document.getElementById('VesselCompression').value),
-    Lymphadenopathy: parseInt(document.getElementById('Lymphadenopathy').value),
-    Margins: parseInt(document.getElementById('Margins').value),
-    Ecostructure: parseInt(document.getElementById('Ecostructure').value),
-    Multiple: parseInt(document.getElementById('Multiple').value),
-    HospitalCenter: document.getElementById("HospitalCenter").value.trim(),
-    ProtocolCode: document.getElementById("ProtocolCode").value.trim(),
-    prediction: result,
-  };
+function validateMandatoryFields() {
+  const mandatoryElements = document.querySelectorAll('.mandatory');
+  let missingFields = [];
+
+   mandatoryElements.forEach(elem => {
+    const id = elem.id;
+    const value = document.getElementById(id).value;
+
+    // Considera vuoto anche "NaN" o stringa vuota per i numerici
+    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
+      missingFields.push(id);
+    }
+  });
+
+  return missingFields;
 }
 
-const sendToServer = async (data) => {
-  try {
-    const response = await fetch(`/salva`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  } catch (error) {
-    console.error("Errore nell'invio al server:", error);
-  }
-}
-
-
+// send the data to prediction logic (python script)
 const setPredictionLogicBE = async () => {
 	formData = parseFormData(); // tienilo oggetto
 	sessionStorage.setItem("datetime", formData.datetime);
@@ -194,29 +244,4 @@ const setPredictionLogicBE = async () => {
   }
 
   await window.predict(formData);
-
 };
-
-window.onload = () => {
-  document.querySelector(".container").hidden = true;
-
-  // Pulisce tutti i campi di input e select
-  const fieldsToReset = [
-    'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilatation',
-    'VesselCompression', 'Lymphadenopathy', 'Margins', 'Ecostructure',
-    'Multiple', 'HospitalCenter', 'ProtocolCode'
-  ];
-  
-  fieldsToReset.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (el.tagName === "INPUT") el.value = "";
-    if (el.tagName === "SELECT") el.selectedIndex = 0;
-    el.style.backgroundColor = "white";
-  });
-
-  document.getElementById("error").innerText = "";
-  document.getElementById("validationError").innerText = "";
-
-
-}

@@ -10,6 +10,24 @@ from pyodide.http import pyfetch
 dt_model = joblib.load("./models/DT.joblib")
 rf_model = joblib.load("./models/RF.joblib")
 
+print(f"dt model: {dt_model}")
+print(f"rf model: {rf_model}")
+
+feature_names = [
+  'age',
+  'sex',
+  'Dim1',
+  'Dim2',
+  'Lymphadenopathy',
+  'DuctRetrodilation',
+  'Arteries',
+  'Veins',
+  'VesselCompression',
+  'Ecostructure',
+  'Margins',
+  'Multiple'
+]
+  
 
 def blend_color(base_color, ratio):
     # base_color is (R, G, B)
@@ -32,18 +50,18 @@ def get_color(ratio):
         strength = (0.5 - ratio) * 2
         return blend_color((0, 0, 255), strength)
 
+
+
+
 def predict_input(data):
   if data['model'] == "DT":
+    df = parse_input(data=data, model=dt_model)
     clf = dt_model
   elif data['model'] == "RF":
-    clf = rf_model
-    
+    df = parse_input(data=data, model=rf_model)
+    clf = rf_model   
   else:
     raise Exception("Invalid Input Model, must be DT or RF")
-  
-  df = parse_input(data=data)
-  
-
 
   clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
   
@@ -53,12 +71,15 @@ def predict_input(data):
   print("%.2f" % clf_prediction)
   print("----------")
   
-  return round(clf_prediction), color
+  return round(clf_prediction), color, df.to_dict(orient='list')
+
+
+
 
 async def get_frontend_resources_from_prediction(formData):
   data = formData.to_py()
   
-  result, color = predict_input(data)
+  result, color, model_data = predict_input(data)
   
   text_prediction = ""
   
@@ -76,6 +97,9 @@ async def get_frontend_resources_from_prediction(formData):
       text_prediction = "Most Likely Malignant"
   
   text_color = "white" if result <= 25 or result >= 75 else "black"
+  
+  for key, val in model_data.items():
+    data[key] = val[0]
   
   try:
     
@@ -97,26 +121,19 @@ async def get_frontend_resources_from_prediction(formData):
   js.sessionStorage.setItem("predictionColor", text_color)
   js.sessionStorage.setItem("predictionPercent", data['prediction'])
   
-  js.window.location.href = "/prediction"
+  
+  
   
 
-def parse_input(data):
-  df = pd.DataFrame({
-    'age': data['age'] if data['age'] is not None else np.nan,
-    'sex': data['sex'] if data['sex'] is not None else np.nan,
-    'Dim1': data['Dim1'] if data['Dim1'] is not None else np.nan,
-    'Dim2': data['Dim2'] if data['Dim2'] is not None else np.nan,
-    'Lymphadenopathy': data['Lymphadenopathy'],
-    'DuctRetrodilation': data['DuctRetrodilatation'],
-    'Arteries': data['Arteries'] if data['Arteries'] is not None else np.nan,
-    'Veins': data['Veins'] if data['Veins'] is not None else np.nan,
-    'VesselCompression': data['VesselCompression'],
-    'Ecostructure': data['Ecostructure'],
-    'Margins': data['Margins'],
-    'Multiple': data['Multiple'] if data['Multiple'] is not None else np.nan
-  }, index=[0])
+def parse_input(data, model):
+  selected_features = [feature_names[i] for i in range(len(feature_names)) if model.named_steps['sel'].support_[i]]
   
-  return df
+  parsed_data = {
+    key: data.get(key) if key in selected_features else np.nan
+    for key in feature_names
+  }
+  
+  return pd.DataFrame(parsed_data, index=[0])
 
 
 js_function = pyscript.ffi.create_proxy(get_frontend_resources_from_prediction)

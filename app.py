@@ -11,60 +11,19 @@ import pytz
 from openpyxl import load_workbook, Workbook
 from dateutil import parser
 from dotenv import load_dotenv
+from sito import create_app
 
 
-app = Flask(__name__)
+app = create_app()
 CORS(app)
 
 load_dotenv()
 
 excel_file_path = "./diagnosi.xlsx"
 
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-# Route per lo stato del server
 @app.route("/status")
 def status():
     return "✅ Server Flask attivo e funzionante!"
-    
-@app.route("/prediction")
-def prediction():
-    print("now at prediction")
-    return render_template("prediction.html")
-
-@app.route("/static/pyscript.toml", methods=['GET'])
-def send_and_cache_pyscript():
-    response = send_from_directory('static', './pyscript.toml')
-    response.headers['Cache-Control'] = 'public, max-age=86400'  
-    return response
-
-@app.route("/static/flexible_scaler.py", methods=['GET'])
-def send_and_cache_flexible_scaler():
-    response = send_from_directory('static', './flexible_scaler.py')
-    response.headers['Cache-Control'] = 'public, max-age=86400' 
-    return response
-
-@app.route("/static/model_prediction.py", methods=['GET'])
-def send_and_cache_model_prediction():
-    response = send_from_directory('static', './model_prediction.py')
-    response.headers['Cache-Control'] = 'public, max-age=86400'
-    return response
-
-@app.route("/static/models/DT.joblib", methods=['GET'])
-def send_and_cache_DT_model():
-    response = send_from_directory('static', './models/DT.joblib')
-    response.headers['Cache-Control'] = 'public, max-age=86400'
-    return response
-
-@app.route("/static/models/RF.joblib", methods=['GET'])
-def send_and_cache_RF_model():
-    response = send_from_directory('static', './models/RF.joblib')
-    response.headers['Cache-Control'] = 'public, max-age=86400'
-    return response
-    
 
 @app.route("/salva", methods=["POST"])
 def salva_diagnosi():
@@ -84,7 +43,7 @@ def salva_diagnosi():
         "Min Dim": data.get("Dim2"),
         "Veinous Inf": data.get("Veins"),
         "Arterious Inf": data.get("Arteries"),
-        "Duct Ret/Ductal Inv": data.get("DuctRetrodilatation"),
+        "Duct Ret/Ductal Inv": data.get("DuctRetrodilation"),
         "Vessel Comp": data.get("VesselCompression"),
         "Lymphadenopathy": data.get("Lymphadenopathy"),
         "Reg Margins": data.get("Margins"),
