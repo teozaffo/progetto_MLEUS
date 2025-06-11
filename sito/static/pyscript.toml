@@ -1,0 +1,15 @@
+packages = [
+  "scikit-learn==1.6.1",
+  "pandas",
+  "numpy",
+  "joblib"
+]
+
+[[fetch]]
+files = [
+  "/flexible_scaler.py",
+  "/models/DT.joblib",
+  "/models/RF.joblib"
+]
+
+sync_main_only = true

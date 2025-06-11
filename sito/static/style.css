@@ -74,6 +74,53 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+/* HTML: <div class="loader"></div> */
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+  margin: auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  gap: 1.5rem;
+}
+
+.loader {
+  width: 70%;
+  height: 15px;
+  border-radius: 20px;
+  border: 2px solid rgb(40, 146, 221);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  --c: no-repeat linear-gradient(#2892dd 0 0);
+  background: var(--c), var(--c), transparent;
+  background-size: 50% 100%;
+  animation: l16 3s infinite;
+  animation-play-state: running;
+}
+
+.loader.paused::before {
+  animation-play-state: paused;
+}
+
+
+@keyframes l16 {
+  0%   {background-position:-150% 0,-150% 0}
+  66%  {background-position: 250% 0,-150% 0}
+  100% {background-position: 250% 0, 250% 0}
+}
+
 .button-row {
   display: flex;
   justify-content: center;
@@ -189,15 +236,15 @@ input[type="radio"] {
 
 .btn-group {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap; /* ⛔ non andare a capo */
+  justify-content: center;
+  flex-wrap: row;
   gap: 6px;
   margin-top: 1rem;
 }
 
 .model-btn {
   flex: 1;
-  max-width: 33%;
+  max-width: 40%;
   min-width: 80px;
   padding: 8px 10px;
   font-size: 14px;
@@ -214,6 +261,11 @@ input[type="radio"] {
   background-color: #007bff;
   color: white;
 }
+
+.clicked {
+  background-color: #007bff;
+  color: white;
+} 
 
 .information {
   font-weight: bold;
@@ -376,6 +428,96 @@ input[type="radio"] {
   background-color: #0056b3;
 }
 
+.feedback-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#show-DT-button {
+  flex: 1;
+  max-width: 30%;
+  min-width: 80px;
+  font-size: 14px;
+  border: 2px solid #007bff;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+#show-DT-button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+#inner-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  text-align: center;
+}
+
+.modal-content {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+}
+
+.modal-content {
+  animation-name: zoom
+}
+
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+
+.close {
+  position: relative;
+  top: 30px;
+  left: 15px;
+  color:rgb(18, 17, 17);
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 600px){
+  .modal-content {
+    width: 100%;
+  }
+}
 
 @media (max-width: 600px) {
   #gradient-bar {
