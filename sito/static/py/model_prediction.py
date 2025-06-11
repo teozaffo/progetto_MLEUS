@@ -107,7 +107,7 @@ async def get_frontend_resources_from_prediction(formData):
       body=json.dumps(data)
     )
     result = await response.json()
-    js.console.log("Risposta del server:", result)
+    js.console.log("Risposta del server:", str(result))
   except Exception as e:
     
     js.console.error("Errore nell'invio al server:", e)
