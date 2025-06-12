@@ -1,3 +1,15 @@
+const metricsDT = {
+  balacc: "0.87",
+  sens: "0.89",
+  spec: "0.85"
+}
+
+const metricsNB = {
+  balacc: "0.88",
+  sens: "0.90",
+  spec: "0.85"
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Popola il risultato nella pagina
 
@@ -97,8 +109,10 @@ const checkIfModelIsDT = (model) => {
   if (underTheHood === "Explainable") {
     dtButton.style.display = "block";
     setEventListenersForDTPlot();
+    setMetricsInformation(metricsDT)
   } else {
     dtButton.style.display = "none";
+    setMetricsInformation(metricsNB)
   }
 }
 
@@ -123,4 +137,10 @@ const preventEventPropagationForDTModal = (e) => {
   e.stopPropagation();
   e.stopImmediatePropagation();
   return false;
+}
+
+const setMetricsInformation = (metrics) => {
+  document.getElementById("Balanced-Accuracy").innerText = `Balanced Accuracy: ${metrics.balacc}`;
+  document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
+  document.getElementById("Specificity").innerText = `Specificity: ${metrics.spec}`
 }
