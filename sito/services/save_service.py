@@ -1,9 +1,6 @@
-from .utils.save_utils import parse_new_row, add_new_row_to_excel, add_feddback_to_existing_row
-from flask import jsonify
+from utils.save_utils import parse_new_row, add_new_row_to_excel, add_feddback_to_existing_row
 
-def save_diagnosis(request):
-  data = request.get_json()
-  
+def save_diagnosis(data, request):
   new_row = parse_new_row(data=data, request=request)
   
   print("📄 Riga da salvare:", new_row)

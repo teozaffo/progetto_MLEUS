@@ -7,6 +7,6 @@ pages_bp = Blueprint('pages', __name__)
 def index():
     return render_template("index.html")
 
-@pages_bp.route("/prediction")
-def redirect_prediction():
-    return redirect('/')
+@pages_bp.route("/result")
+def result():
+    return render_template("results.html")

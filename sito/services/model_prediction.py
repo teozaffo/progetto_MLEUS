@@ -1,14 +1,22 @@
 import pandas as pd
 import numpy as np
-from dotenv import load_dotenv
 import os
+import sys
+
+sys.path.insert(0, './sito/services')
 import joblib
-from sito.services.flexible_scaler import FlexibleScaler
+from utils.get_background_color_from_prediction import get_color
+from save_service import save_diagnosis
+from flexible_scaler import FlexibleScaler
 
-load_dotenv()
+prefix = "./sito/services/ml_models"
 
-dt_model = joblib.load("./ml_models/DT.joblib")
-nb_model = joblib.load("./ml_models/NB.joblib")
+# on load operations
+dt_model = joblib.load(f"{prefix}/DT.joblib")
+nb_model = joblib.load(f"{prefix}/NB.joblib")
+
+print(dt_model)
+print(nb_model)
 
 feature_names = [
   'age',
@@ -26,61 +34,100 @@ feature_names = [
 ]
 
 
-
-
-def blend_color(base_color, ratio):
-    # base_color is (R, G, B)
-    r = int((1 - ratio) * 255 + ratio * base_color[0])
-    g = int((1 - ratio) * 255 + ratio * base_color[1])
-    b = int((1 - ratio) * 255 + ratio * base_color[2])
-    return f'#{r:02x}{g:02x}{b:02x}'
-
-def get_color(ratio):
-    if ratio == 0.5:
-        return "#ffffff"
       
-    if ratio > 0.90:
-      return "#990000"
-    
-    if ratio > 0.5:  # more positives -> red blend
-        strength = (ratio - 0.5) * 2
-        return blend_color((255, 0, 0), strength)
-    else:  # more negatives -> blue blend
-        strength = (0.5 - ratio) * 2
-        return blend_color((0, 0, 255), strength)
-      
-      
-      
-
-def predict_input(data):
-  if data['model'] == "NB":
-    clf = nb_model
-  elif data['model'] == "DT":
-    clf = dt_model
-  else:
-    raise Exception("Invalid Input Model, must be DT, NB or LR")
-  
-  df = parse_input(data=data, model=clf)
-
-  clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
-  
-  color = get_color(float("{:.2f}".format(clf_prediction /100)))
-  
-  print(f"model: {data['model']}")
-  print("%.2f" % clf_prediction)
-  print("----------")
-  
-  return "%.2f" % clf_prediction, color
-
-
-
-
 def parse_input(data, model):
   selected_features = [feature_names[i] for i in range(len(feature_names)) if model.named_steps['sel'].support_[i]]
+  
+  print(selected_features)
   
   parsed_data = {
     key: data.get(key) if key in selected_features else np.nan
     for key in feature_names
   }
   
+  print(parsed_data)
+  
   return pd.DataFrame(parsed_data, index=[0])
+  
+
+      
+
+def predict_input(request):
+  data = request.get_json()
+  
+  # check which model the user has chosen, schema is: [type-of-model] [model]
+  # where type-of-model can be "Sensitive", "Specific", etc..
+  # and model can be "NB" or "DT"
+  print(data['model'])
+  if data['model'][-2:] == "NB":
+    clf = nb_model
+  elif data['model'][-2:] == "DT":
+    clf = dt_model
+    print("dt_model")
+  else:
+    raise Exception("Invalid Input Model, must be DT, NB or LR")
+  
+  df = parse_input(data=data, model=clf)
+
+  # predict using the parsed input
+  clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
+  
+  print(clf.predict_proba(df))
+  
+  # get text, backgroundColor and textColor from prediction
+  response = get_frontend_resources_from_prediction(
+    clf_prediction=clf_prediction,
+    data=data
+  )
+  
+  print(f"model: {data['model']}")
+  print("%.2f" % clf_prediction)
+  print("----------")
+  
+  # save user input, prediction and chosen model to excel file
+  save_response = save_diagnosis(data=data, request=request)
+  
+  response["datetime"] = save_response["datetime"]
+  response ["message"] = "case predicted and saved successfully!"
+  
+  return response
+
+
+
+
+
+def get_frontend_resources_from_prediction(clf_prediction, data):
+  percent = round(clf_prediction)
+  
+  print(clf_prediction)
+  
+  background_color = get_color(float("{:.2f}".format(clf_prediction /100)))
+  
+  text_color = "white" if percent <= 25 or percent >= 75 else "black"
+  
+  data['prediction'] = prediction = f"{percent}% Malignant"
+  
+  prediction_text = get_text_from_prediction_percent(percent=percent)
+  
+  return {
+    "prediction": prediction,
+    "predictionText": prediction_text,
+    "textColor": text_color,
+    "backgroundcolor": background_color
+  }
+
+
+
+
+
+def get_text_from_prediction_percent(percent):
+  if percent < 5:
+    return "Most Likely Benign"
+  elif percent < 45:
+    return "Likely Benign"
+  elif percent<= 55:
+    return "Uncertain Case"
+  elif percent <= 95:
+    return "Likely Malignant"
+  else:
+    return "Most Likely Malignant"

@@ -7,6 +7,9 @@ from openpyxl import load_workbook
 
 excel_file_path = "../../../diagnosi.xlsx"
 
+
+
+
 def parse_new_row(data, request):
   return {
     "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
@@ -70,8 +73,7 @@ def add_new_row_to_excel(new_row):
   
   
   
-  
-        
+      
 def add_feddback_to_existing_row(data):
   df = pd.read_excel(excel_file_path)
 
