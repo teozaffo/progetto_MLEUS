@@ -101,11 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		  sendBtn.style.color = backStyles.color;
 		  sendBtn.style.border = "1px solid black";
 
-		  backBtn.style.backgroundColor = "#007bff"; // colore fisso, non dipende da hover
+		  backBtn.style.backgroundColor = "#007bff"; 
 		  backBtn.style.color = "white";
 		  backBtn.style.border = "none";
 
-		  // 🔒 disattiva effetto hover e focus
+		  // disattiva effetto hover e focus
 		  backBtn.classList.add("no-hover-focus");
 		}
 
