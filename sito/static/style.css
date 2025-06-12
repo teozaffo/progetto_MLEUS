@@ -553,7 +553,6 @@ input[type="radio"] {
   outline: none;
 }
 
-
 #infoToggle-Metrics:checked ~ .info-drawer {
   max-height: fit-content;
   padding: 0.75rem;
