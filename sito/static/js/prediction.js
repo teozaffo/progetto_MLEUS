@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (sendBtn && backBtn) {
 		  const sendStyles = getComputedStyle(sendBtn);
 		  const backStyles = getComputedStyle(backBtn);
+		  
+		  if (sendBtn) sendBtn.disabled = true;
 
 		  sendBtn.style.backgroundColor = backStyles.backgroundColor;
 		  sendBtn.style.color = backStyles.color;
@@ -159,6 +161,11 @@ const preventEventPropagationForDTModal = (e) => {
   return false;
 }
 
+const setMetricsInformation = (metrics) => {
+  document.getElementById("Balanced-Accuracy").innerText = `Balanced Accuracy: ${metrics.balacc}`;
+  document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
+  document.getElementById("Specificity").innerText = `Specificity: ${metrics.spec}`
+}
 const setMetricsInformation = (metrics) => {
   document.getElementById("Balanced-Accuracy").innerText = `Balanced Accuracy: ${metrics.balacc}`;
   document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
