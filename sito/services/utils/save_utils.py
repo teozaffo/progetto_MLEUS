@@ -5,7 +5,7 @@ from dateutil import parser
 import pandas as pd
 from openpyxl import load_workbook
 
-excel_file_path = "../../../diagnosi.xlsx"
+excel_file_path = "./diagnosi.xlsx"
 
 
 

@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         q5: reason
       };
 
-      fetch("/questionario", {
+      fetch("/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
