@@ -166,8 +166,4 @@ const setMetricsInformation = (metrics) => {
   document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
   document.getElementById("Specificity").innerText = `Specificity: ${metrics.spec}`
 }
-const setMetricsInformation = (metrics) => {
-  document.getElementById("Balanced-Accuracy").innerText = `Balanced Accuracy: ${metrics.balacc}`;
-  document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
-  document.getElementById("Specificity").innerText = `Specificity: ${metrics.spec}`
-}
+
