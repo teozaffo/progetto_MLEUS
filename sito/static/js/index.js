@@ -166,7 +166,7 @@ function validateMandatoryFields() {
 const predictClass = () => {
   // Ripristina colore bianco a tutti i campi
   allFeatures.forEach(id => {
-	document.getElementById(id).style.backgroundColor = "white";
+    document.getElementById(id).style.backgroundColor = "white";
   });
 
   // Messaggio di errore per i campi obbligatori
@@ -176,15 +176,15 @@ const predictClass = () => {
   const missing = validateMandatoryFields();
 
   if (missing.length > 0) {
-	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-	validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
+    const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+    validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
 
-	// Evidenzia i campi mancanti
-	missing.forEach(id => {
-	  document.getElementById(id).style.backgroundColor = "#fff3cd";
-	});
+    // Evidenzia i campi mancanti
+    missing.forEach(id => {
+      document.getElementById(id).style.backgroundColor = "#fff3cd";
+    });
 
-	return;
+    return;
   }
   
   setPredictionLogicBE();
@@ -247,7 +247,7 @@ const getUserIP = async (formData) => {
 
 const setPredictionLogicBE = async () => {
   const formData = parseFormData();
-  localStorage.setItem("datetime", formData.datetime);
+  sessionStorage.setItem("datetime", formData.datetime);
 
   const result = await predictFromServer(formData);
   

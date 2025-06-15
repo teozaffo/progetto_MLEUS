@@ -10,98 +10,127 @@ const metricsNB = {
   spec: "0.85"
 }
 
+
+/*
+* Populating html information on DOM content loaded
+*/
 document.addEventListener('DOMContentLoaded', () => {
-  // Popola il risultato nella pagina
+  const predictionInformation = getAllPredictionInformationFromSessionStorage();
+  console.log(predictionInformation.prediction);
 
-  // Modifica la risposta in base alla percentuale
-  const model = sessionStorage.getItem("model")
-  const predictionText = sessionStorage.getItem("predictionText")
-  const backgroundColor = sessionStorage.getItem("predictionBackgroundColor")
-  const textColor = sessionStorage.getItem("predictionColor")
+  setPageElementsBasedOnPredictionInformation(predictionInformation);
 
-  console.log(sessionStorage.getItem("prediction"))
-  
-  // Nasconde la percentuale
-  /*const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
-  const cleanedPrediction = rawPrediction.replace(/\d+% /, "");  // rimuove "23% "
-  document.getElementById("result").innerText = cleanedPrediction;*/
-  
-  // Randomizza la visualizzazione della percentuale
-  /*const rawPrediction = localStorage.getItem("prediction") || ":: Nessun risultato ::";
-  const showPercentage = Math.random() < 0.5;
-  const displayPrediction = showPercentage
-    ? rawPrediction
-    : rawPrediction.replace(/\d+% /, "");
-  document.getElementById("result").innerText = displayPrediction;*/
-  
-  //Mostra la percentuale
-  // document.getElementById("result").innerText = localStorage.getItem("prediction") || ":: Nessun risultato ::";
-  
-    
-  document.getElementById("result").innerText = predictionText;
-  document.getElementById("result").style.backgroundColor = backgroundColor;
-  document.getElementById("result").style.color = textColor;
-  document.getElementById("selected-model").innerText = `Selected Model: ${model.slice(0, model.length - 3)}`;
+  checkIfModelIsExplainable(predictionInformation.model);
+  checkModelUnderTheHood(predictionInformation.model);
 
-  checkIfModelIsExplainable(model);
-
-  // Listener per bottone Indietro
+  // listener for Back button
   const backBtn = document.getElementById("back-button");
   if (backBtn) {
     backBtn.addEventListener("click", () => {
-      window.location.href = "/";
-	  //history.back();
+      goBackHome();
     });
   }
 
-  // Listener per invio del form feedback
+  // listener for Feedback form
   const form = document.getElementById("feedback");
   if (form) {
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
-
-      const reliability = document.querySelector('input[name="reliability"]:checked')?.value;
-      const usefulness = document.querySelector('input[name="usefulness"]:checked')?.value;
-      const influence = document.querySelector('input[name="influence"]:checked')?.value;
-      const recommendability = document.getElementById("recommendability").value;
-      const reason = String(document.getElementById("reason").value);
-
-      const feedback = {
-        datetime: localStorage.getItem("datetime"),
-        q1: reliability,
-        q2: usefulness,
-        q3: influence,
-        q4: recommendability,
-        q5: reason
-      };
-
-      fetch("/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(feedback)
-      })
-      .then(response => response.json())
-      .then(data => {
-		console.log("✅ Risposta dal server:", data);
-		//document.getElementById("feedback-confirmation").innerText = "✅ Feedback saved successfully.";
-		const confirmation = document.getElementById("feedback-confirmation");
-		confirmation.innerText = "✅ Feedback saved successfully.";
-
-		// Dopo 1 secondo, torna a index.html
-		setTimeout(() => {
-		window.location.href = "/";
-		}, 1500);
-		
-		//history.back();
-      })
-      .catch(error => {
-        console.error("❌ Errore nell'invio del questionario:", error);
-      });
-    });
+    form.addEventListener("submit", (event) => addListenerToFeedBackForm(event));
   }
 });
+
+
+const goBackHome = () => {
+  window.location.href = "/";
+}
+
+
+/*
+* gets all prediction information needed to populate the page
+* that was sent by the server and then saved on sessionStorage
+*/
+const getAllPredictionInformationFromSessionStorage = () => {
+  return {
+    model: sessionStorage.getItem("model"),
+    predictionText: sessionStorage.getItem("predictionText"),
+    backgroundColor: sessionStorage.getItem("predictionBackgroundColor"),
+    textColor: sessionStorage.getItem("predictionColor"),
+    prediction: sessionStorage.getItem("prediction")
+  }
+}
+
+
+
+/*
+* Sets page elements that need prediction information dynamically
+*/
+const setPageElementsBasedOnPredictionInformation = (predictionInformation) => {
+  document.getElementById("result").innerText = predictionInformation.predictionText;
+  document.getElementById("result").style.backgroundColor = predictionInformation.backgroundColor;
+  document.getElementById("result").style.color = predictionInformation.textColor;
+  document.getElementById("selected-model").innerText = 
+    `Selected Model: ${predictionInformation
+      .model
+      .slice(0, predictionInformation.model.length - 3)
+    }`;
+}
+
+
+
+
+/* 
+* Feedback form methods
+*/
+const addListenerToFeedBackForm = (event) => {
+  event.preventDefault();
+
+  const feedback = getFeedbackFormAnswers();
+
+  sendFeedbackToServerAndShowServerResponse(feedback);
+}
+
+const getFeedbackFormAnswers = () => {
+  return {
+    datetime: sessionStorage.getItem("datetime"),
+    q1: document.querySelector('input[name="reliability"]:checked')?.value,
+    q2: document.querySelector('input[name="usefulness"]:checked')?.value,
+    q3: document.querySelector('input[name="influence"]:checked')?.value,
+    q4: document.getElementById("recommendability").value,
+    q5: String(document.getElementById("reason").value),
+  }
+}
+
+const sendFeedbackToServerAndShowServerResponse = (feedback) => {
+  fetch("/feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(feedback)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Risposta dal server:", data);
+    showModal("success")
+  })
+  .catch(error => {
+    console.error("Errore nell'invio del questionario:", error);
+    showModal("failure")
+  });
+}
+
+
+
+
+/* 
+* Modal Card methods
+*/
+const showModal = (type) => {
+  document.getElementById(type + 'Modal').style.display = 'flex';
+}
+
+const closeModal = (type) => {
+  document.getElementById(type + 'Modal').style.display = 'none';
+}
 
 
 
@@ -132,17 +161,18 @@ const checkIfModelIsExplainable = (model) => {
 const setEventListenersForDTPlot = () => {
   document.getElementById("show-DT-button").addEventListener("click", () => showDT());
   
-  document.getElementById("DT-Modal").addEventListener("click", () => closeDT());
+  document.getElementById("DT-modal").addEventListener("click", () => closeDT());
+  document.getElementById("close-modal").addEventListener("click", () => closeDT());
 
   document.getElementById("inner-modal").addEventListener("click", (event) => preventEventPropagationForDTModal(event));
 }
 
 const showDT = () => {
-  document.getElementsByClassName("modal")[0].style.display = "block";
+  document.getElementById("DT-modal").style.display = "block";
 }
 
 const closeDT = () => {
-  document.getElementsByClassName("modal")[0].style.display = "none"
+  document.getElementById("DT-modal").style.display = "none"
 }
 
 const preventEventPropagationForDTModal = (e) => {
@@ -172,4 +202,22 @@ const setMetricsInformation = (metrics) => {
   document.getElementById("Balanced-Accuracy").innerText = `Balanced Accuracy: ${metrics.balacc}`;
   document.getElementById("Sensitivity").innerText = `Sensitivity: ${metrics.sens}`;
   document.getElementById("Specificity").innerText = `Specificity: ${metrics.spec}`
+}
+
+
+
+/*
+* Method to show the prediction text with prediction percentage
+* 50% of the time and prediction text without prediction percentage 
+* 50% of the time.
+* Call this method in setPageElementsBasedOnPredictionInformation() method
+* instead of:
+* document.getElementById("result").innerText = predictionInformation.predictionText;
+*/
+const showPredictionPercentageForResultRandomly = (predictionInformation) => {
+  const showPercentage = Math.random() < 0.5;
+  const displayPrediction = showPercentage
+    ? predictionInformation.prediction
+    : predictionInformation.predictionText;
+  document.getElementById("result").innerText = displayPrediction;
 }

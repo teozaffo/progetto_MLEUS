@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="../static/style.css">
 
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <script type="text/javascript" src="../static/js/prediction.js"></script>
 
@@ -17,11 +17,46 @@
   
   <body>
 
-    <div id="DT-Modal" class="modal">
+    <div id="DT-modal" class="modal">
       <div id="inner-modal">
-        <img class="modal-content" id="Dt-img" src="../static/DT_tree.png">
+        <span id="close-modal" class="close-button close-left">
+          <i class="fa-regular fa-circle-xmark fa-xs"></i>
+        </span>
+        <img class="modal-img" id="Dt-img" src="../static/DT_tree.png">
       </div>
     </div>
+
+
+    <div id="successModal" class="modal success">
+      <div class="modal-content">
+        <div class="o-circle c-container__circle o-circle__sign--success">
+          <div class="o-circle__sign"></div>  
+        </div>   
+        <h2>Success!</h2>
+        <p>Feedback saved successfully.</p>
+        <div class="button-row">
+          <button class="home-btn" onclick="goBackHome()">Home</button>
+          <button class="close-btn" onclick="closeModal('success')">Close</button>
+        </div>
+      </div>
+    </div>
+    
+
+    <div id="failureModal" class="modal failure">
+      <div class="modal-content">
+        <div class="o-circle c-container__circle o-circle__sign--failure">
+          <div class="o-circle__sign"></div>  
+        </div> 
+        <h2>Failed!</h2>
+        <p>Something went wrong while trying to save your Feedback. Please try again.</p>
+        <div class="button-row">
+          <button class="home-btn" onclick="goBackHome()">Home</button>
+          <button class="close-btn" onclick="closeModal('success')">Close</button>
+        </div>
+      </div>
+    </div>
+
+
 
     <div class="container">
       <h2>Results:</h2>
@@ -44,7 +79,8 @@
           </label>
         </div>
 
-        <div class="info-drawer">
+        <div class="metrics-drawer">
+          <h4>Model Metrics:</h4>
           <p id="Balanced-Accuracy">Lorem Ipsum....</p>
           <p id="Sensitivity">Lorem Ipsum....</p>
           <p id="Specificity">Lorem Ipsum....</p>
@@ -178,7 +214,7 @@
         <label for="reason">5. Why?</label><br>
         <textarea id="reason" rows="6" cols="70" placeholder="Explain here..."></textarea>
 
-        <div class="button-row">
+    <div class="button-row">
 			<button id="form-submit" type="submit">Send</button>
 			<button id="back-button" type="button">Back</button>
 		</div>
