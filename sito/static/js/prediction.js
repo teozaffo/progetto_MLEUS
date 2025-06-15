@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("result").style.color = textColor;
   document.getElementById("selected-model").innerText = `Selected Model: ${model.slice(0, model.length - 3)}`;
 
-  checkIfModelIsDT(model);
+  checkIfModelIsExplainable(model);
 
   // Listener per bottone Indietro
   const backBtn = document.getElementById("back-button");
@@ -103,19 +103,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-const checkIfModelIsDT = (model) => {
-  const underTheHood = model.slice(0, model.length - 3);
+
+
+
+/* 
+* Method that checks the title of the model 
+* (wether it is Sensitive, Explainable, Specific or Balanced)
+* and shows the plot of DT model if the title is Explainable
+*/
+const checkIfModelIsExplainable = (model) => {
+  const modelTitle = model.slice(0, model.length - 3);
   const dtButton = document.getElementById("show-DT-button");
-  if (underTheHood === "Explainable") {
+  if (modelTitle === "Explainable") {
     dtButton.style.display = "block";
     setEventListenersForDTPlot();
-    setMetricsInformation(metricsDT)
   } else {
     dtButton.style.display = "none";
-    setMetricsInformation(metricsNB)
   }
 }
 
+
+
+
+/* 
+* Methods for setting all the event listeners for
+* DT plot modal
+*/
 const setEventListenersForDTPlot = () => {
   document.getElementById("show-DT-button").addEventListener("click", () => showDT());
   
@@ -137,6 +150,22 @@ const preventEventPropagationForDTModal = (e) => {
   e.stopPropagation();
   e.stopImmediatePropagation();
   return false;
+}
+
+
+
+
+/* 
+* Methods for checking which model the user has chosen
+* under the hood, and based on that it shows the correct model metrics 
+*/
+const checkModelUnderTheHood = (model) => {
+  const modelUnderTheHood = model.slice(model.length - 2);
+  if (modelUnderTheHood === "DT") {
+    setMetricsInformation(metricsDT);
+  } else {
+    setMetricsInformation(metricsNB);
+  }
 }
 
 const setMetricsInformation = (metrics) => {

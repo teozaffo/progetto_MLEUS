@@ -35,7 +35,25 @@ const mandatoryFeaturesNB = [
 ];
 
 
-window.onload = () => {
+
+document.addEventListener('DOMContentLoaded', function () {
+  resetFields();
+
+  document
+    .getElementById("predictButton")
+    .addEventListener("click", async () => await predictClass());
+
+  document.getElementById("inputForm").hidden = true;
+
+  addEventListenersForModelButtons();
+
+  document.getElementById("inputForm").reset();
+});
+
+
+
+
+const resetFields = () => {
   // Pulisce tutti i campi di input e select
   const fieldsToReset = [
     'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilation',
@@ -55,20 +73,6 @@ window.onload = () => {
   document.getElementById("validationError").innerText = "";
 }
 
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  document
-    .getElementById("predictButton")
-    .addEventListener("click", async () => await predictClass());
-
-  document.getElementById("inputForm").hidden = true;
-
-  addEventListenersForModelButtons();
-
-  document.getElementById("inputForm").reset();
-});
 
 
 
@@ -160,12 +164,12 @@ function validateMandatoryFields() {
 
 
 const predictClass = () => {
-  // 🔄 Ripristina colore bianco a tutti i campi
+  // Ripristina colore bianco a tutti i campi
   allFeatures.forEach(id => {
 	document.getElementById(id).style.backgroundColor = "white";
   });
 
-  // ❗ Messaggio di errore per i campi obbligatori
+  // Messaggio di errore per i campi obbligatori
   const validationError = document.getElementById("validationError");
   validationError.innerText = "";
 
@@ -185,6 +189,9 @@ const predictClass = () => {
   
   setPredictionLogicBE();
 }
+
+
+
 
 const parseFormData = (result) => {
   return {
@@ -208,6 +215,10 @@ const parseFormData = (result) => {
   };
 }
 
+
+
+
+
 const predictFromServer = async (data) => {
   try {
     const response = await fetch(`/model_prediction`, {
@@ -221,10 +232,9 @@ const predictFromServer = async (data) => {
   }
 }
 
-const setPredictionLogicBE = async () => {
-  const formData = parseFormData();
-  localStorage.setItem("datetime", formData.datetime);
 
+
+const getUserIP = async (formData) => {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
@@ -232,6 +242,13 @@ const setPredictionLogicBE = async () => {
   } catch (e) {
     formData.ip = "IP non disponibile";
   }
+}
+
+
+
+const setPredictionLogicBE = async () => {
+  const formData = parseFormData();
+  localStorage.setItem("datetime", formData.datetime);
 
   const result = await predictFromServer(formData);
   
