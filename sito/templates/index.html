@@ -8,28 +8,34 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Decision Tree for Pancreatic Ductal Adenocarcinoma</title>
+  <title>Predictors for Pancreatic Ductal Adenocarcinoma</title>
 
   <link rel="stylesheet" href="../static/style.css">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <script type="text/javascript" src="../static/index.js"></script>
+  <script type="text/javascript" src="../static/js/index.js"></script>
 
 </head>
 
 <body>
 
-  <div class="container">
+  <div class="container" id="predictor-container">
 
     <h2>Predictors for Pancreatic Ductal Adenocarcinoma</h2>
 
-    <h3> Select preferred Model:</h3>
+    <p class="tool-description">
+      This tool levarages Machine Learning models to assist in the diagnosis of pancreatic ductal adenocarcinoma (PDAC)
+      given some patient data extracted from the echoendoscopic features of a solid lesion of the pancreas.
+    </p>
+
+    <h3>Select a predictive model according to your preferences:</h3>
 
     <div class="btn-group">
-      <button class="model-btn" id="DT">Sensitive</button>
-      <button class="model-btn" id="NB">Balanced</button>
-      <button class="model-btn" id="LR">Specific</button>
+      <button class="model-btn" id="Sensitive-DT">Sensitive</button>
+      <button class="model-btn" id="Explainable-DT">Explainable</button>
+      <button class="model-btn" id="Specific-NB">Specific</button>
+      <button class="model-btn" id="Balanced-NB">Balanced</button>
     </div>
 
     <form id="inputForm" autocomplete="off">
@@ -272,12 +278,12 @@
         </div>
       </div>
 
-      <div class="feature" id="DuctRetrodilatation-feature">
+      <div class="feature" id="DuctRetrodilation-feature">
         <input type="checkbox" id="infoToggle-Duct" class="info-toggle">
-        <div class="form-row" id="DuctRetrodilatation-row">
+        <div class="form-row" id="DuctRetrodilation-row">
 
           <div class="label-group">
-            <label for="DuctRetrodilatation">Duct Retrodilatation, Ductal Invasion</label>
+            <label for="DuctRetrodilation">Duct Retrodilatation, Ductal Invasion</label>
             <label class="info-icon-desktop">
               <span class="icon-wrapper">
                 <i class="fa-regular fa-circle-question fa-2xs"></i>
@@ -296,7 +302,7 @@
             </label>
           </div>
 
-          <select id="DuctRetrodilatation">
+          <select id="DuctRetrodilation">
 
             <option value="0" selected>False</option>
 
@@ -634,6 +640,15 @@
     </form>
 
     <div class="error" id="error"></div>
+
+    <br>
+
+    <div class="card">
+      <h5 class="card-header"><b>DISCLAIMER</b></h5>
+        <div class="card-body">
+          <p class="card-text">This tool was created for research and testing purposes. Medical decisions must NOT be based on the results of this program, which cannot be considered a diagnostic tool. Although this program has been tested thoroughly, the accuracy of the information cannot be guaranteed and the authors shall not be liable for any claim, damages or other liability.</p>
+        </div>
+    </div>
 
   </div>
   
