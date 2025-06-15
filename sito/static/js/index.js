@@ -186,7 +186,7 @@ const predictClass = () => {
 
     return;
   }
-  // ✅ Controlli sui valori numerici
+  // Controlli sui valori numerici
   const age = parseInt(document.getElementById("Age").value);
   const dim1 = parseInt(document.getElementById("Dim1").value);
   const dim2 = parseInt(document.getElementById("Dim2").value);
@@ -200,11 +200,6 @@ const predictClass = () => {
 
   if (valueErrors.length > 0) {
     validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
-	
-  // Reset colore dei campi
-  //["Age", "Dim1", "Dim2"].forEach(id => {
-  //  document.getElementById(id).style.backgroundColor = "white";
-  //});
 
   // Colora solo quelli con errore
   if (
