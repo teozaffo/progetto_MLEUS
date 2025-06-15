@@ -546,6 +546,13 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+.no-hover-focus:hover,
+.no-hover-focus:focus {
+  background-color: #007bff !important;  /* colore blu chiaro normale */
+  color: white !important;
+  outline: none;
+}
+
 #infoToggle-Metrics:checked ~ .info-drawer {
   max-height: fit-content;
   padding: 0.75rem;

@@ -233,7 +233,6 @@ const predictFromServer = async (data) => {
 }
 
 
-
 const getUserIP = async (formData) => {
   try {
     const res = await fetch('https://api.ipify.org?format=json');

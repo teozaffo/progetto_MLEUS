@@ -3,3 +3,4 @@ pandas
 openpyxl
 flask-cors
 python-dotenv
+scikit-learn==1.6.1
