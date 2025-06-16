@@ -35,7 +35,25 @@ const mandatoryFeaturesNB = [
 ];
 
 
-window.onload = () => {
+
+document.addEventListener('DOMContentLoaded', function () {
+  resetFields();
+
+  document
+    .getElementById("predictButton")
+    .addEventListener("click", async () => await predictClass());
+
+  document.getElementById("inputForm").hidden = true;
+
+  addEventListenersForModelButtons();
+
+  document.getElementById("inputForm").reset();
+});
+
+
+
+
+const resetFields = () => {
   // Pulisce tutti i campi di input e select
   const fieldsToReset = [
     'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilation',
@@ -55,20 +73,6 @@ window.onload = () => {
   document.getElementById("validationError").innerText = "";
 }
 
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  document
-    .getElementById("predictButton")
-    .addEventListener("click", async () => await predictClass());
-
-  document.getElementById("inputForm").hidden = true;
-
-  addEventListenersForModelButtons();
-
-  document.getElementById("inputForm").reset();
-});
 
 
 
@@ -160,31 +164,70 @@ function validateMandatoryFields() {
 
 
 const predictClass = () => {
-  // 🔄 Ripristina colore bianco a tutti i campi
+  // Ripristina colore bianco a tutti i campi
   allFeatures.forEach(id => {
-	document.getElementById(id).style.backgroundColor = "white";
+    document.getElementById(id).style.backgroundColor = "white";
   });
 
-  // ❗ Messaggio di errore per i campi obbligatori
+  // Messaggio di errore per i campi obbligatori
   const validationError = document.getElementById("validationError");
   validationError.innerText = "";
 
   const missing = validateMandatoryFields();
 
   if (missing.length > 0) {
-	const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-	validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
+    const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+    validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
 
-	// Evidenzia i campi mancanti
-	missing.forEach(id => {
-	  document.getElementById(id).style.backgroundColor = "#fff3cd";
-	});
+    // Evidenzia i campi mancanti
+    missing.forEach(id => {
+      document.getElementById(id).style.backgroundColor = "#fff3cd";
+    });
 
-	return;
+    return;
   }
-  
+  // Controlli sui valori numerici
+  const age = parseInt(document.getElementById("Age").value);
+  const dim1 = parseInt(document.getElementById("Dim1").value);
+  const dim2 = parseInt(document.getElementById("Dim2").value);
+
+  let valueErrors = [];
+
+  if (isNaN(age) || age < 1 || age > 120) valueErrors.push("Age must be between 1 and 120");
+  if (isNaN(dim1) || dim1 < 1 || dim1 > 120) valueErrors.push("Max Dimension (Dim1) must be between 1 and 120");
+  if (isNaN(dim2) || dim2 < 1 || dim2 > 120) valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
+  if (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1) valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
+
+  if (valueErrors.length > 0) {
+    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
+
+  // Colora solo quelli con errore
+  if (
+    isNaN(age) || age < 1 || age > 120
+  ) {
+    document.getElementById("Age").style.backgroundColor = "#fff3cd";
+  }
+
+  if (
+    isNaN(dim1) || dim1 < 1 || dim1 > 120
+  ) {
+    document.getElementById("Dim1").style.backgroundColor = "#fff3cd";
+  }
+
+  if (
+    isNaN(dim2) || dim2 < 1 || dim2 > 120 ||
+    (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1)
+  ) {
+    document.getElementById("Dim2").style.backgroundColor = "#fff3cd";
+  }
+
+  return;
+}
   setPredictionLogicBE();
 }
+
+
+
 
 const parseFormData = (result) => {
   return {
@@ -208,6 +251,10 @@ const parseFormData = (result) => {
   };
 }
 
+
+
+
+
 const predictFromServer = async (data) => {
   try {
     const response = await fetch(`/model_prediction`, {
@@ -221,10 +268,8 @@ const predictFromServer = async (data) => {
   }
 }
 
-const setPredictionLogicBE = async () => {
-  const formData = parseFormData();
-  localStorage.setItem("datetime", formData.datetime);
 
+const getUserIP = async (formData) => {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
@@ -232,6 +277,13 @@ const setPredictionLogicBE = async () => {
   } catch (e) {
     formData.ip = "IP non disponibile";
   }
+}
+
+
+
+const setPredictionLogicBE = async () => {
+  const formData = parseFormData();
+  sessionStorage.setItem("datetime", formData.datetime);
 
   const result = await predictFromServer(formData);
   
