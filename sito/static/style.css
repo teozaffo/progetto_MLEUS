@@ -78,6 +78,17 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+#reset {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+}
+
+#reset:hover {
+  background-color: #f0f0f0;
+}
+
+
 /* HTML: <div class="loader"></div> */
 
 .loader-container {
@@ -416,24 +427,6 @@ input[type="radio"] {
 #gradient-legend-uncertain { left: 50%; transform: translateX(-50%); }
 #gradient-legend-malignant { right: 0; }
 
-#predictButton {
-  width: 100%;  /* di default: su mobile */
-  max-width: 200px; /* su desktop sarà più stretto */
-  display: block;
-  margin: 1.5rem auto 0 auto; /* centra orizzontalmente */
-  padding: 0.75rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-
-#predictButton:hover {
-  background-color: #0056b3;
-}
 
 .feedback-row {
   display: flex;

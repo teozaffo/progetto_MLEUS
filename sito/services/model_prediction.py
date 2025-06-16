@@ -36,16 +36,12 @@ feature_names = [
 def parse_input(data, model):
   selected_features = [feature_names[i] for i in range(len(feature_names)) if model.named_steps['sel'].support_[i]]
   
-  print(selected_features)
-  
   parsed_data = {
     key: data.get(key) if key in selected_features else np.nan
     for key in feature_names
   }
   
-  print(parsed_data)
-  
-  return pd.DataFrame(parsed_data, index=[0])
+  return pd.DataFrame(parsed_data, index=[0]), parsed_data
   
 
       
@@ -65,7 +61,7 @@ def predict_input():
   else:
     raise Exception("Invalid Input Model, must be DT, NB or LR")
   
-  df = parse_input(data=data, model=clf)
+  df, parsed_data = parse_input(data=data, model=clf)
 
   # predict using the parsed input
   clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
@@ -83,7 +79,7 @@ def predict_input():
   print("----------")
   
   # save user input, prediction and chosen model to excel file
-  save_response = save_diagnosis(data=data)
+  save_response = save_diagnosis(data=data, parsed_data=parsed_data)
   
   response["datetime"] = save_response["datetime"]
   response ["message"] = "case predicted and saved successfully!"
@@ -129,3 +125,12 @@ def get_text_from_prediction_percent(percent):
     return "Likely Malignant"
   else:
     return "Most Likely Malignant"
+  
+  
+
+
+def get_mandatory_features():
+  return {
+    "DT_features": [feature_names[i] for i in range(len(feature_names)) if dt_model.named_steps['sel'].support_[i]],
+    "NB_features": [feature_names[i] for i in range(len(feature_names)) if nb_model.named_steps['sel'].support_[i]]
+  }

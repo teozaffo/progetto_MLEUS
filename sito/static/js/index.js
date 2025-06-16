@@ -1,8 +1,8 @@
 let currModel = "";
 
 const allFeatures = [
-  'Age',
-  'Sex', 
+  'age',
+  'sex', 
   'Dim1', 
   'Dim2', 
   'Lymphadenopathy', 
@@ -15,29 +15,15 @@ const allFeatures = [
   'Multiple',
 ];
 
-const mandatoryFeaturesDT = [
-  'Arteries',
-  'Lymphadenopathy',
-  'DuctRetrodilation', 
-  'Ecostructure', 
-  'Margins',
-];
-
-const mandatoryFeaturesNB = [
-  'Age', 
-  'Dim1', 
-  'Dim2', 
-  'Lymphadenopathy', 
-  'DuctRetrodilatation', 
-  'VesselCompression', 
-  'Ecostructure', 
-  'Margins', 
-];
+let allMandatoryFeatures = {}
 
 
-
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async () => {
   resetAllFields();
+
+  document.getElementById("reset").addEventListener("click", () => resetAllFields());
+
+  allMandatoryFeatures = await fetchMandatoryFeatures();
 
   document
     .getElementById("predictButton")
@@ -53,26 +39,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* 
-* Resets all fields 
-* (all Features and Hospital Code and Protocol Code)
+* Resets all fields' appearance and values
+* (all Features + Hospital Code and Protocol Code)
 */
 const resetAllFields = () => {
   // Pulisce tutti i campi di input e select
-  const fieldsToReset = [
-    'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilation',
-    'VesselCompression', 'Lymphadenopathy', 'Margins', 'Ecostructure',
-    'Multiple', 'HospitalCenter', 'ProtocolCode'
-  ];
+  const fieldsToReset = allFeatures.concat(['HospitalCenter', 'ProtocolCode']);
   
   fieldsToReset.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     if (el.tagName === "INPUT") el.value = "";
     if (el.tagName === "SELECT") el.selectedIndex = 0;
-    el.style.backgroundColor = "white";
   });
 
+  resetFieldAppearance();
+
   document.getElementById("validationError").innerText = "";
+}
+
+
+
+
+/* 
+* Resets the appearance of All Fields
+* backgroundColor = white and grey border
+*/
+const resetFieldAppearance = () => {
+  allFeatures.concat(['HospitalCenter', 'ProtocolCode']).forEach(id => {
+    document.getElementById(id).style.backgroundColor = "white";
+    document.getElementById(id).style.border = "2px solid #ccc";
+    document.getElementById(id).classList.remove("error");
+  });
+}
+
+
+
+/* 
+* fetches the mandatory features of all Models from backend 
+* (so that it doesn't have to be hard coded)
+* mandatory features for DT = allMandatoryFeatures.DT_features
+* mandatory feature for NB = allMandatoryFeatures.NB_features
+*
+* in case the model changes, we just have to change the key of the
+* dict in the backend function to an appropriate key
+* and make mandatory features for {model} = allMandatoryFeatures.{model}_features
+*/
+const fetchMandatoryFeatures = async () => {
+  try {
+    const response = await fetch(`/mandatory_features`, {
+      method: "GET"
+    });
+
+    return response.json();
+  } catch (error) {
+    console.error("Errore nell'invio al server:", error);
+    return;
+  }
 }
 
 
@@ -93,11 +116,7 @@ const addEventListenersForModelButtons = () => {
 
       setMandatoryFeatures(btn_id.slice(btn_id.length - 2));
     
-      //Ripristina il colore di sfondo di tutti i campi
-      allFeatures.concat(["HospitalCenter", "ProtocolCode"]).forEach(id => {
-        const el = document.getElementById(id);
-        el.style.backgroundColor = "white";
-      });
+      resetFieldAppearance();
 
       let inner_btns = document.querySelectorAll(".model-btn")
       inner_btns.forEach(inner_btn => {
@@ -126,12 +145,15 @@ const setMandatoryFeatures = (model) => {
   let mandatoryFeatures = {}
 
   if (model === "DT") {
-    mandatoryFeatures = mandatoryFeaturesDT;
+    // in case we change models, just chande this to:
+    // mandatoryFeatures = allMandatoryFeatures.{new_model}_features
+    mandatoryFeatures = allMandatoryFeatures.DT_features;
   } else if (model === "NB") {
-    mandatoryFeatures = mandatoryFeaturesNB;
+    mandatoryFeatures = allMandatoryFeatures.NB_features;
   } else {
     console.error("Invalid Model!!!")
   }
+
 
   allFeatures.map(feature => {
     if (mandatoryFeatures.includes(feature)) {
@@ -172,6 +194,7 @@ const predictClass = async () => {
 };
 
 
+
 /* 
 * Parses the input data to be sent to backend
 */
@@ -179,8 +202,8 @@ const parseFormData = (result) => {
   return {
     model: currModel,
     datetime: new Date().toISOString(),
-    age: parseInt(document.getElementById('Age').value),
-    sex: parseInt(document.getElementById('Sex').value),
+    age: parseInt(document.getElementById('age').value),
+    sex: parseInt(document.getElementById('sex').value),
     Dim1: parseInt(document.getElementById('Dim1').value),
     Dim2: parseInt(document.getElementById('Dim2').value),
     Veins: parseInt(document.getElementById('Veins').value),
@@ -250,7 +273,7 @@ function checkForMissingMandatoryFields() {
 
 
 const checkIfFieldsAreInvalidAndShowCorrectErrorMessage = () => {
-  resetFields();
+  resetFieldAppearance();
 
   // Messaggio di errore per i campi obbligatori
   const validationError = document.getElementById("validationError");
@@ -264,10 +287,17 @@ const checkIfFieldsAreInvalidAndShowCorrectErrorMessage = () => {
     setCorrectErrorMessageAndFieldAppearanceWhenMissingFields(missing, valueErrors);
   }
 
-  validateNumericalFields(valueErrors);
+  const mandatoryFeatures = []
+
+  // get mandatory features from html
+  document.querySelectorAll('.mandatory').forEach(e => mandatoryFeatures.push(e.id));
+
+  if (mandatoryFeatures.includes("age") || mandatoryFeatures.includes("Dim1") || mandatoryFeatures.includes("Dim2")) {
+    validateNumericalFields(valueErrors);
+  }
 
   if (valueErrors.length > 0) {
-    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
+    validationError.innerHTML = `⚠️ Please correct the following fields+:<br>${valueErrors.join("<br>")}`;
 
     document.querySelectorAll(".error").forEach( i => {
       i.style.backgroundColor = "rgba(236, 102, 102, 0.4)";
@@ -280,14 +310,6 @@ const checkIfFieldsAreInvalidAndShowCorrectErrorMessage = () => {
   return false
 }
 
-const resetFields = () => {
-  // Ripristina colore bianco a tutti i campi
-  allFeatures.forEach(id => {
-    document.getElementById(id).style.backgroundColor = "white";
-    document.getElementById(id).style.border = "2px solid #ccc";
-    document.getElementById(id).classList.remove("error");
-  });
-}
 
 const setCorrectErrorMessageAndFieldAppearanceWhenMissingFields = 
 (missing, valueErrors) => {
@@ -304,13 +326,13 @@ const setCorrectErrorMessageAndFieldAppearanceWhenMissingFields =
 
 const validateNumericalFields = (valueErrors) => {
   // Controlli sui valori numerici
-  const age = parseInt(document.getElementById("Age").value);
+  const age = parseInt(document.getElementById("age").value);
   const dim1 = parseInt(document.getElementById("Dim1").value);
   const dim2 = parseInt(document.getElementById("Dim2").value);
 
   if (fieldNotInRange(age, 1, 120)) { 
     valueErrors.push("Age must be between 1 and 120");
-    document.getElementById("Age").classList.add("error");
+    document.getElementById("age").classList.add("error");
   }
   if (fieldNotInRange(dim1, 1, 120)) { 
     valueErrors.push("Max Dimension (Dim1) must be between 1 and 120"); 
