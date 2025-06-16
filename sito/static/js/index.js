@@ -186,7 +186,43 @@ const predictClass = () => {
 
     return;
   }
-  
+  // Controlli sui valori numerici
+  const age = parseInt(document.getElementById("Age").value);
+  const dim1 = parseInt(document.getElementById("Dim1").value);
+  const dim2 = parseInt(document.getElementById("Dim2").value);
+
+  let valueErrors = [];
+
+  if (isNaN(age) || age < 1 || age > 120) valueErrors.push("Age must be between 1 and 120");
+  if (isNaN(dim1) || dim1 < 1 || dim1 > 120) valueErrors.push("Max Dimension (Dim1) must be between 1 and 120");
+  if (isNaN(dim2) || dim2 < 1 || dim2 > 120) valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
+  if (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1) valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
+
+  if (valueErrors.length > 0) {
+    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
+
+  // Colora solo quelli con errore
+  if (
+    isNaN(age) || age < 1 || age > 120
+  ) {
+    document.getElementById("Age").style.backgroundColor = "#fff3cd";
+  }
+
+  if (
+    isNaN(dim1) || dim1 < 1 || dim1 > 120
+  ) {
+    document.getElementById("Dim1").style.backgroundColor = "#fff3cd";
+  }
+
+  if (
+    isNaN(dim2) || dim2 < 1 || dim2 > 120 ||
+    (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1)
+  ) {
+    document.getElementById("Dim2").style.backgroundColor = "#fff3cd";
+  }
+
+  return;
+}
   setPredictionLogicBE();
 }
 

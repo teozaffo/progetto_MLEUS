@@ -59,7 +59,7 @@
             </label>
           </div>
 
-          <input id="Age" type="text">
+          <input id="Age" type="number" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         </div>
 
@@ -136,7 +136,7 @@
             </label>
           </div>
 
-          <input id="Dim1" type="text" placeholder="(in mm)">
+          <input id="Dim1" type="number" placeholder="(in mm)" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         </div>
 
@@ -176,7 +176,7 @@
             </label>
           </div>
 
-          <input id="Dim2" type="text" placeholder="(in mm)">
+          <input id="Dim2" type="number" placeholder="(in mm)" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         </div>
 
