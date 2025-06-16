@@ -297,7 +297,7 @@ const checkIfFieldsAreInvalidAndShowCorrectErrorMessage = () => {
   }
 
   if (valueErrors.length > 0) {
-    validationError.innerHTML = `⚠️ Please correct the following fields+:<br>${valueErrors.join("<br>")}`;
+    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
 
     document.querySelectorAll(".error").forEach( i => {
       i.style.backgroundColor = "rgba(236, 102, 102, 0.4)";
