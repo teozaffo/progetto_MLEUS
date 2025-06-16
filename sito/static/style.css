@@ -253,24 +253,21 @@ input[type="radio"] {
 .btn-group {
   display: flex;
   justify-content: center;
-  flex-wrap: row;
-  gap: 6px;
+  flex-wrap: nowrap;
+  column-gap: 10px;  
+  row-gap: 2px;    
   margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 
 .model-btn {
-  flex: 1;
-  max-width: 40%;
-  min-width: 80px;
-  padding: 8px 10px;
-  font-size: 14px;
+  padding: 10px 24px;
+  font-size: 15px;
   border: 2px solid #007bff;
   background-color: white;
   color: black;
   cursor: pointer;
-  text-align: center;
-  border-radius: 4px;
-  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .model-btn:hover {
@@ -663,6 +660,18 @@ input[type="radio"] {
 }
 
 @media (max-width: 600px) {
+	
+  .btn-group {
+    flex-wrap: wrap; /* ✅ mobile: PERMETTE il capo */
+	row-gap: 0px;
+  }
+
+  .model-btn {
+    flex: 1 1 45%;
+    min-width: 120px;
+    max-width: 200px;
+    text-align: center;
+  }
 	
   .container {
     padding: 1.25rem;
