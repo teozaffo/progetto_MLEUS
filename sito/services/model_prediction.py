@@ -16,9 +16,6 @@ prefix = "./sito/services/ml_models"
 dt_model = joblib.load(f"{prefix}/DT.joblib")
 nb_model = joblib.load(f"{prefix}/NB.joblib")
 
-print(dt_model)
-print(nb_model)
-
 feature_names = [
   'age',
   'sex',
