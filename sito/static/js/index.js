@@ -69,7 +69,6 @@ const resetFields = () => {
     el.style.backgroundColor = "white";
   });
 
-  document.getElementById("error").innerText = "";
   document.getElementById("validationError").innerText = "";
 }
 
@@ -107,7 +106,6 @@ const addEventListenersForModelButtons = () => {
       })
     
       //Reset risultati e messaggi
-      document.getElementById("error").innerText = "";
       document.getElementById("validationError").innerText = "";
 
       document.querySelectorAll('.info-toggle').forEach(cb => cb.checked = false);
@@ -193,33 +191,27 @@ const predictClass = () => {
 
   let valueErrors = [];
 
-  if (isNaN(age) || age < 1 || age > 120) valueErrors.push("Age must be between 1 and 120");
-  if (isNaN(dim1) || dim1 < 1 || dim1 > 120) valueErrors.push("Max Dimension (Dim1) must be between 1 and 120");
-  if (isNaN(dim2) || dim2 < 1 || dim2 > 120) valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
-  if (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1) valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
+  if (isNaN(age) || age < 1 || age > 120) { 
+    valueErrors.push("Age must be between 1 and 120");
+    document.getElementById("Age").classList.add("error");
+  }
+  if (isNaN(dim1) || dim1 < 1 || dim1 > 120) { 
+    valueErrors.push("Max Dimension (Dim1) must be between 1 and 120"); 
+    document.getElementById("Dim1").classList.add("error");
+  }
+  if (isNaN(dim2) || dim2 < 1 || dim2 > 120) { 
+    valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
+    document.getElementById("Dim2").classList.add("error");
+  }
+  if (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1) { 
+    valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
+    document.getElementById("Dim1").classList.add("error");
+    document.getElementById("Dim2").classList.add("error");
+  }
 
   if (valueErrors.length > 0) {
     validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
 
-  // Colora solo quelli con errore
-  if (
-    isNaN(age) || age < 1 || age > 120
-  ) {
-    document.getElementById("Age").style.backgroundColor = "#fff3cd";
-  }
-
-  if (
-    isNaN(dim1) || dim1 < 1 || dim1 > 120
-  ) {
-    document.getElementById("Dim1").style.backgroundColor = "#fff3cd";
-  }
-
-  if (
-    isNaN(dim2) || dim2 < 1 || dim2 > 120 ||
-    (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1)
-  ) {
-    document.getElementById("Dim2").style.backgroundColor = "#fff3cd";
-  }
 
   return;
 }

@@ -149,10 +149,15 @@ input[type="radio"] {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.error {
+.error-message {
   color: red;
   margin-top: 1rem;
   text-align: center;
+}
+
+.form-row input.error {
+  background-color: rgb(235, 100, 100);
+  border: 2px solid rgb(236, 34, 34);
 }
 
 .form-row {

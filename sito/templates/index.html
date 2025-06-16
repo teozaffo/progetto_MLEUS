@@ -59,7 +59,7 @@
             </label>
           </div>
 
-          <input id="Age" type="number" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input id="Age" type="number">
 
         </div>
 
@@ -136,7 +136,7 @@
             </label>
           </div>
 
-          <input id="Dim1" type="number" placeholder="(in mm)" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input id="Dim1" type="number" placeholder="(in mm)">
 
         </div>
 
@@ -176,7 +176,7 @@
             </label>
           </div>
 
-          <input id="Dim2" type="number" placeholder="(in mm)" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input id="Dim2" type="number" placeholder="(in mm)">
 
         </div>
 
@@ -634,12 +634,10 @@
 
       <button id="predictButton" type="button">Classify</button>
 
-      <div class="error" id="validationError" style="color: red; margin-top: 1rem; text-align: center;"></div>
+      <div class="error-message" id="validationError"></div>
 
 
     </form>
-
-    <div class="error" id="error"></div>
 
     <br>
 
