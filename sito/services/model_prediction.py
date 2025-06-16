@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, './sito/services')
 import joblib
 from utils.get_background_color_from_prediction import get_color
+from flask import request
 from save_service import save_diagnosis
 from flexible_scaler import FlexibleScaler
 
@@ -52,10 +53,10 @@ def parse_input(data, model):
 
       
 
-def predict_input(request):
+def predict_input():
   data = request.get_json()
   
-  # check which model the user has chosen, schema is: [type-of-model] [model]
+  # check which model the user has chosen, schema is: [type-of-model]-[model]
   # where type-of-model can be "Sensitive", "Specific", etc..
   # and model can be "NB" or "DT"
   print(data['model'])
@@ -85,7 +86,7 @@ def predict_input(request):
   print("----------")
   
   # save user input, prediction and chosen model to excel file
-  save_response = save_diagnosis(data=data, request=request)
+  save_response = save_diagnosis(data=data)
   
   response["datetime"] = save_response["datetime"]
   response ["message"] = "case predicted and saved successfully!"

@@ -37,7 +37,7 @@ const mandatoryFeaturesNB = [
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  resetFields();
+  resetAllFields();
 
   document
     .getElementById("predictButton")
@@ -52,8 +52,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-const resetFields = () => {
+/* 
+* Resets all fields 
+* (all Features and Hospital Code and Protocol Code)
+*/
+const resetAllFields = () => {
   // Pulisce tutti i campi di input e select
   const fieldsToReset = [
     'Age', 'Sex', 'Dim1', 'Dim2', 'Veins', 'Arteries', 'DuctRetrodilation',
@@ -115,6 +118,10 @@ const addEventListenersForModelButtons = () => {
 
 
 
+
+/* 
+* Sets correct Mandatory Features based on the model selected
+*/
 const setMandatoryFeatures = (model) => {
   let mandatoryFeatures = {}
 
@@ -139,95 +146,35 @@ const setMandatoryFeatures = (model) => {
 
 
 
-
-function validateMandatoryFields() {
-  const mandatoryElements = document.querySelectorAll('.mandatory');
-  let missingFields = [];
-
-  mandatoryElements.forEach(elem => {
-    const id = elem.id;
-    const value = document.getElementById(id).value;
-
-    // Considera vuoto anche "NaN" o stringa vuota per i numerici
-    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
-      missingFields.push(id);
-    }
-  });
-
-  return missingFields;
-}
-
-
-
-
-
-const predictClass = () => {
-  // Ripristina colore bianco a tutti i campi
-  allFeatures.forEach(id => {
-    document.getElementById(id).style.backgroundColor = "white";
-    document.getElementById(id).style.border = "2px solid #ccc";
-    document.getElementById(id).classList.remove("error");
-  });
-
-  // Messaggio di errore per i campi obbligatori
-  const validationError = document.getElementById("validationError");
-  validationError.innerText = "";
-
-  const missing = validateMandatoryFields();
-
-  if (missing.length > 0) {
-    const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
-    validationError.innerText = `⚠️ Please fill in the following mandatory fields: ${labels.join(', ')}`;
-
-    // Evidenzia i campi mancanti
-    missing.forEach(id => {
-      document.getElementById(id).style.backgroundColor = "#fff3cd";
-    });
-
+/* 
+* If the input in the fields for the mandatory features are valid
+* then it sends the input to the server and saves the response to sessionStorage
+* or else it updates frontend to show correct error message and highlights invalid fields
+*/
+const predictClass = async () => {
+  if (checkIfFieldsAreInvalidAndShowCorrectErrorMessage()) {
     return;
   }
-  // Controlli sui valori numerici
-  const age = parseInt(document.getElementById("Age").value);
-  const dim1 = parseInt(document.getElementById("Dim1").value);
-  const dim2 = parseInt(document.getElementById("Dim2").value);
 
-  let valueErrors = [];
+  const formData = parseFormData();
+  sessionStorage.setItem("datetime", formData.datetime);
 
-  if (isNaN(age) || age < 1 || age > 120) { 
-    valueErrors.push("Age must be between 1 and 120");
-    document.getElementById("Age").classList.add("error");
-  }
-  if (isNaN(dim1) || dim1 < 1 || dim1 > 120) { 
-    valueErrors.push("Max Dimension (Dim1) must be between 1 and 120"); 
-    document.getElementById("Dim1").classList.add("error");
-  }
-  if (isNaN(dim2) || dim2 < 1 || dim2 > 120) { 
-    valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
-    document.getElementById("Dim2").classList.add("error");
-  }
-  if (!isNaN(dim1) && !isNaN(dim2) && dim2 > dim1) { 
-    valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
-    document.getElementById("Dim1").classList.add("error");
-    document.getElementById("Dim2").classList.add("error");
-  }
-
-  if (valueErrors.length > 0) {
-    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
-
-    document.querySelectorAll(".error").forEach( i => {
-      console.log(i.id)
-      i.style.backgroundColor = "rgba(236, 102, 102, 0.4)";
-      i.style.border = "2px solid rgb(255, 0, 0)";
-    });
-
+  const result = await sendInputToServer(formData);
+  
+  if (!result || !result.prediction) {
+    console.error("Errore: nessuna previsione ricevuta dal server.");
     return;
   }
-  setPredictionLogicBE();
-}
+
+  putResponseToSessionStorage(result);
+
+  window.location.href = "/result";
+};
 
 
-
-
+/* 
+* Parses the input data to be sent to backend
+*/
 const parseFormData = (result) => {
   return {
     model: currModel,
@@ -253,8 +200,7 @@ const parseFormData = (result) => {
 
 
 
-
-const predictFromServer = async (data) => {
+const sendInputToServer = async (data) => {
   try {
     const response = await fetch(`/model_prediction`, {
       method: "POST",
@@ -268,44 +214,136 @@ const predictFromServer = async (data) => {
 }
 
 
+
+const putResponseToSessionStorage = (response) => {
+  console.log(response)
+
+  console.log(currModel)
+
+  sessionStorage.setItem("model", currModel);
+  sessionStorage.setItem("prediction", response.prediction);
+  sessionStorage.setItem("predictionBackgroundColor", response.backgroundcolor);
+  sessionStorage.setItem("predictionColor", response.textColor);
+  sessionStorage.setItem("predictionText", response.predictionText)
+
+  console.log(response.prediction);
+}
+
+
+function checkForMissingMandatoryFields() {
+  const mandatoryElements = document.querySelectorAll('.mandatory');
+  let missingFields = [];
+
+  mandatoryElements.forEach(elem => {
+    const id = elem.id;
+    const value = document.getElementById(id).value;
+
+    // Considera vuoto anche "NaN" o stringa vuota per i numerici
+    if (value === "" || isNaN(value) && elem.tagName === "INPUT") {
+      missingFields.push(id);
+    }
+  });
+
+  return missingFields;
+}
+
+
+
+const checkIfFieldsAreInvalidAndShowCorrectErrorMessage = () => {
+  resetFields();
+
+  // Messaggio di errore per i campi obbligatori
+  const validationError = document.getElementById("validationError");
+  validationError.innerText = "";
+
+  const missing = checkForMissingMandatoryFields();
+
+  let valueErrors = [];
+
+  if (missing.length > 0) {
+    setCorrectErrorMessageAndFieldAppearanceWhenMissingFields(missing, valueErrors);
+  }
+
+  validateNumericalFields(valueErrors);
+
+  if (valueErrors.length > 0) {
+    validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
+
+    document.querySelectorAll(".error").forEach( i => {
+      i.style.backgroundColor = "rgba(236, 102, 102, 0.4)";
+      i.style.border = "2px solid rgb(255, 0, 0)";
+    });
+
+    return true;
+  }
+
+  return false
+}
+
+const resetFields = () => {
+  // Ripristina colore bianco a tutti i campi
+  allFeatures.forEach(id => {
+    document.getElementById(id).style.backgroundColor = "white";
+    document.getElementById(id).style.border = "2px solid #ccc";
+    document.getElementById(id).classList.remove("error");
+  });
+}
+
+const setCorrectErrorMessageAndFieldAppearanceWhenMissingFields = 
+(missing, valueErrors) => {
+  const labels = missing.map(id => document.querySelector(`label[for="${id}"]`).innerText);
+  valueErrors.push(`${labels.join(', ')} must not be empty`);
+
+  // Evidenzia i campi mancanti
+  missing.forEach(id => {
+    document.getElementById(id).style.backgroundColor = "rgba(236, 102, 102, 0.4)";
+    document.getElementById(id).style.border = "2px solid rgb(255, 0, 0)";
+  });
+}
+
+
+const validateNumericalFields = (valueErrors) => {
+  // Controlli sui valori numerici
+  const age = parseInt(document.getElementById("Age").value);
+  const dim1 = parseInt(document.getElementById("Dim1").value);
+  const dim2 = parseInt(document.getElementById("Dim2").value);
+
+  if (fieldNotInRange(age, 1, 120)) { 
+    valueErrors.push("Age must be between 1 and 120");
+    document.getElementById("Age").classList.add("error");
+  }
+  if (fieldNotInRange(dim1, 1, 120)) { 
+    valueErrors.push("Max Dimension (Dim1) must be between 1 and 120"); 
+    document.getElementById("Dim1").classList.add("error");
+  }
+  if (fieldNotInRange(dim2, 1, 120)) { 
+    valueErrors.push("Min Dimension (Dim2) must be between 1 and 120");
+    document.getElementById("Dim2").classList.add("error");
+  }
+  if (dim2 > dim1) { 
+    valueErrors.push("Min Dimension must be less than or equal to Max Dimension");
+    document.getElementById("Dim1").classList.add("error");
+    document.getElementById("Dim2").classList.add("error");
+  }
+}
+
+const fieldNotInRange = (field, low, up) => {
+  return field < low || field > up
+}
+
+
+
+
+/* 
+* gets user IP from external api (for testing purposes)
+*/
 const getUserIP = async (formData) => {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     formData.ip = data.ip;
+    console.log(formData.ip)
   } catch (e) {
     formData.ip = "IP non disponibile";
   }
 }
-
-
-
-const setPredictionLogicBE = async () => {
-  const formData = parseFormData();
-  sessionStorage.setItem("datetime", formData.datetime);
-
-  const result = await predictFromServer(formData);
-  
-  if (!result || !result.prediction) {
-    console.error("Errore: nessuna previsione ricevuta dal server.");
-    return;
-  }
-
-  console.log(result)
-
-  console.log(currModel)
-
-  sessionStorage.setItem("model", currModel);
-  sessionStorage.setItem("prediction", result.prediction);
-  sessionStorage.setItem("predictionBackgroundColor", result.backgroundcolor);
-  sessionStorage.setItem("predictionColor", result.textColor);
-  sessionStorage.setItem("predictionText", result.predictionText)
-
-  console.log(result.prediction);
-
-  window.location.href = "/result";
-
-  //const errorDiv = document.getElementById('error');
-
-  //errorDiv.innerText = '';
-};

@@ -2,6 +2,7 @@ from datetime import datetime
 import pytz
 import os
 from dateutil import parser
+from flask import request
 import pandas as pd
 from openpyxl import load_workbook
 
@@ -10,10 +11,11 @@ excel_file_path = "./diagnosi.xlsx"
 
 
 
-def parse_new_row(data, request):
+def parse_new_row(data):
+  print(data)
   return {
     "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
-    "Ip Address": data.get("ip", request.remote_addr),
+    "Ip Address": get_client_ip(),
     "Model": data.get("model", "unknown"),
     "Hospital Center": data.get("HospitalCenter", ""),
     "Protocol Code": data.get("ProtocolCode", ""),
@@ -33,6 +35,17 @@ def parse_new_row(data, request):
   }
   
   
+  
+def get_client_ip():
+  if request.headers.getlist("X-Forwarded-For"):
+    client_ip = request.headers.getlist("X-Forwarded-For")[0].split(',')[0].strip()
+  else:
+    client_ip = request.remote_addr
+    
+  print(f"client ip: {client_ip}")  
+  return client_ip
+  
+  
 
 
 
@@ -45,8 +58,6 @@ def add_new_row_to_excel(new_row):
       df = pd.DataFrame(columns=new_row.keys())
       print("📁 File non trovato, ne creo uno nuovo con intestazioni")
 
-  # Aggiungi la nuova riga
-  # df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
   new_entry = pd.DataFrame([new_row])
   if not df.empty:
       new_entry = pd.DataFrame([new_row], columns=df.columns)
