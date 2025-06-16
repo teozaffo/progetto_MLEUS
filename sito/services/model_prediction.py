@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, './sito/services')
 import joblib
 from utils.get_background_color_from_prediction import get_color
+from flask import request
 from save_service import save_diagnosis
 from flexible_scaler import FlexibleScaler
 
@@ -14,9 +15,6 @@ prefix = "./sito/services/ml_models"
 # on load operations
 dt_model = joblib.load(f"{prefix}/DT.joblib")
 nb_model = joblib.load(f"{prefix}/NB.joblib")
-
-print(dt_model)
-print(nb_model)
 
 feature_names = [
   'age',
@@ -38,24 +36,20 @@ feature_names = [
 def parse_input(data, model):
   selected_features = [feature_names[i] for i in range(len(feature_names)) if model.named_steps['sel'].support_[i]]
   
-  print(selected_features)
-  
   parsed_data = {
     key: data.get(key) if key in selected_features else np.nan
     for key in feature_names
   }
   
-  print(parsed_data)
-  
-  return pd.DataFrame(parsed_data, index=[0])
+  return pd.DataFrame(parsed_data, index=[0]), parsed_data
   
 
       
 
-def predict_input(request):
+def predict_input():
   data = request.get_json()
   
-  # check which model the user has chosen, schema is: [type-of-model] [model]
+  # check which model the user has chosen, schema is: [type-of-model]-[model]
   # where type-of-model can be "Sensitive", "Specific", etc..
   # and model can be "NB" or "DT"
   print(data['model'])
@@ -67,7 +61,7 @@ def predict_input(request):
   else:
     raise Exception("Invalid Input Model, must be DT, NB or LR")
   
-  df = parse_input(data=data, model=clf)
+  df, parsed_data = parse_input(data=data, model=clf)
 
   # predict using the parsed input
   clf_prediction = clf.predict_proba(df)[:, 1][0] * 100
@@ -85,7 +79,7 @@ def predict_input(request):
   print("----------")
   
   # save user input, prediction and chosen model to excel file
-  save_response = save_diagnosis(data=data, request=request)
+  save_response = save_diagnosis(data=data, parsed_data=parsed_data)
   
   response["datetime"] = save_response["datetime"]
   response ["message"] = "case predicted and saved successfully!"
@@ -131,3 +125,12 @@ def get_text_from_prediction_percent(percent):
     return "Likely Malignant"
   else:
     return "Most Likely Malignant"
+  
+  
+
+
+def get_mandatory_features():
+  return {
+    "DT_features": [feature_names[i] for i in range(len(feature_names)) if dt_model.named_steps['sel'].support_[i]],
+    "NB_features": [feature_names[i] for i in range(len(feature_names)) if nb_model.named_steps['sel'].support_[i]]
+  }

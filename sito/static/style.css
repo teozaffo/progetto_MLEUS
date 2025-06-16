@@ -78,6 +78,17 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+#reset {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+}
+
+#reset:hover {
+  background-color: #f0f0f0;
+}
+
+
 /* HTML: <div class="loader"></div> */
 
 .loader-container {
@@ -149,11 +160,12 @@ input[type="radio"] {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.error {
+.error-message {
   color: red;
   margin-top: 1rem;
   text-align: center;
 }
+
 
 .form-row {
   display: flex;
@@ -241,24 +253,21 @@ input[type="radio"] {
 .btn-group {
   display: flex;
   justify-content: center;
-  flex-wrap: row;
-  gap: 6px;
+  flex-wrap: nowrap;
+  column-gap: 10px;  
+  row-gap: 2px;    
   margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 
 .model-btn {
-  flex: 1;
-  max-width: 40%;
-  min-width: 80px;
-  padding: 8px 10px;
-  font-size: 14px;
+  padding: 10px 24px;
+  font-size: 15px;
   border: 2px solid #007bff;
   background-color: white;
   color: black;
   cursor: pointer;
-  text-align: center;
-  border-radius: 4px;
-  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .model-btn:hover {
@@ -415,24 +424,6 @@ input[type="radio"] {
 #gradient-legend-uncertain { left: 50%; transform: translateX(-50%); }
 #gradient-legend-malignant { right: 0; }
 
-#predictButton {
-  width: 100%;  /* di default: su mobile */
-  max-width: 200px; /* su desktop sarà più stretto */
-  display: block;
-  margin: 1.5rem auto 0 auto; /* centra orizzontalmente */
-  padding: 0.75rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-
-#predictButton:hover {
-  background-color: #0056b3;
-}
 
 .feedback-row {
   display: flex;
@@ -669,6 +660,18 @@ input[type="radio"] {
 }
 
 @media (max-width: 600px) {
+	
+  .btn-group {
+    flex-wrap: wrap; /* ✅ mobile: PERMETTE il capo */
+	row-gap: 0px;
+  }
+
+  .model-btn {
+    flex: 1 1 45%;
+    min-width: 120px;
+    max-width: 200px;
+    text-align: center;
+  }
 	
   .container {
     padding: 1.25rem;

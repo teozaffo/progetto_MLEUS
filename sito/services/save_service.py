@@ -1,7 +1,10 @@
 from utils.save_utils import parse_new_row, add_new_row_to_excel, add_feddback_to_existing_row
 
-def save_diagnosis(data, request):
-  new_row = parse_new_row(data=data, request=request)
+def save_diagnosis(data, parsed_data):
+  for key in parsed_data.keys():
+    data[key] = parsed_data[key]
+  
+  new_row = parse_new_row(data=data)
   
   print("📄 Riga da salvare:", new_row)
   

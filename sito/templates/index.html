@@ -40,13 +40,13 @@
 
     <form id="inputForm" autocomplete="off">
       
-      <div class="feature" id="Age-feature">
-        <input type="checkbox" id="infoToggle-Age" class="info-toggle">
+      <div class="feature" id="age-feature">
+        <input type="checkbox" id="infoToggle-age" class="info-toggle">
 
-        <div class="form-row" id="Age-row">
+        <div class="form-row" id="age-row">
 
           <div class="label-group">
-            <label for="Age">Age</label>
+            <label for="age">Age</label>
 
             <label class="info-icon-desktop">
               <span class="icon-wrapper">
@@ -59,11 +59,11 @@
             </label>
           </div>
 
-          <input id="Age" type="number" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input id="age" type="number" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
         </div>
 
-        <label for="infoToggle-Age" class="info-icon-mobile">
+        <label for="infoToggle-age" class="info-icon-mobile">
           <span class="icon-wrapper">
             <i class="fa-solid fa-chevron-down fa-2xs"></i>
           </span>
@@ -75,13 +75,13 @@
         
       </div>
 
-      <div class="feature" id="Sex-feature">
-        <input type="checkbox" id="infoToggle-Sex" class="info-toggle">
+      <div class="feature" id="sex-feature">
+        <input type="checkbox" id="infoToggle-sex" class="info-toggle">
 
-        <div class="form-row" id="Sex-row">
+        <div class="form-row" id="sex-row">
 
           <div class="hover-box">
-            <label for="Sex">Sex</label>
+            <label for="sex">Sex</label>
 
             <label class="info-icon-desktop">
               <span class="icon-wrapper">
@@ -94,7 +94,7 @@
             </label>
           </div>
 
-          <select id="Sex">
+          <select id="sex">
 
             <option value="0">Female</option>
 
@@ -103,7 +103,7 @@
           </select>
         </div>
 
-        <label for="infoToggle-Sex" class="info-icon-mobile">
+        <label for="infoToggle-sex" class="info-icon-mobile">
           <span class="icon-wrapper">
             <i class="fa-solid fa-chevron-down fa-2xs"></i>
           </span>
@@ -632,14 +632,15 @@
         </p>
       </div>
 
-      <button id="predictButton" type="button">Classify</button>
+      <div class="button-row">
+        <button id="predictButton" type="button">Classify</button>
+        <button id="reset" type="button">Reset</button>
+      </div>
 
-      <div class="error" id="validationError" style="color: red; margin-top: 1rem; text-align: center;"></div>
+      <div class="error-message" id="validationError"></div>
 
 
     </form>
-
-    <div class="error" id="error"></div>
 
     <br>
 
