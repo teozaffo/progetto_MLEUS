@@ -165,6 +165,8 @@ const predictClass = () => {
   // Ripristina colore bianco a tutti i campi
   allFeatures.forEach(id => {
     document.getElementById(id).style.backgroundColor = "white";
+    document.getElementById(id).style.border = "2px solid #ccc";
+    document.getElementById(id).classList.remove("error");
   });
 
   // Messaggio di errore per i campi obbligatori
@@ -212,9 +214,14 @@ const predictClass = () => {
   if (valueErrors.length > 0) {
     validationError.innerHTML = `⚠️ Please correct the following fields:<br>${valueErrors.join("<br>")}`;
 
+    document.querySelectorAll(".error").forEach( i => {
+      console.log(i.id)
+      i.style.backgroundColor = "rgba(236, 102, 102, 0.4)";
+      i.style.border = "2px solid rgb(255, 0, 0)";
+    });
 
-  return;
-}
+    return;
+  }
   setPredictionLogicBE();
 }
 
