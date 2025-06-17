@@ -21,8 +21,11 @@ First of all you have to install the libraries in the  `requirements.txt` file b
 
 for **pip**:
 ``` bash
+#console
 pip install -r requirements.txt
 ```
+
+The project also has a .env file which is not in the repository since it contains sensitive information, it's in the pythonanywhere porject so you can use that one.
 
 for **conda**:
 
@@ -115,26 +118,26 @@ the files have a naming convention of `{scope}_routes.py`.
 A subfolder containing the Machine Learning models used for predicting the cases.
 
 #### utils
-the utils subfolder has the following structure:
+the utils subfolder has the following structure and contains utility functions that are outside the scope of a given service or are extracted to produce cleaner code:
 ```
 utils/
 ├── get_backgroud_color_from_prediction.py
 └── save_utils.py
 ```
-- `get_backgroud_color_from_prediction.py` contains the functions to calculate the background color, given the prediction percentage of the model, of the result card in which helps the user visualize the percentage of Malignity the model has given to the case (goes from dark blue to dark red, where dark blue means 0-5% Malignant and dark red means 95-100% Malignant).
+- `get_backgroud_color_from_prediction.py` contains the functions to calculate the background color (given the prediction percentage of the model) of the result card which give the User a visual hint of the percentage of Malignity the model has given to the case (goes from dark blue to dark red, where dark blue means 0-5% Malignant and dark red means 95-100% Malignant).
 
 - `save_utils.py` contains the functions and the helper functions needed to save the case (by case we mean the input to be predicted by the model given by a User), logging and feedback information to the excel spreadsheet, it's functions are:
     * `parse_new_row(data)` which parses the request payload to a python dict, calls `get_client_ip()`, requires the request's payload `data` and returns the parsed dict.
 
-    * `get_client_ip()` method which extracts the User's ip from the request headers, return the user's ip.
+    * `get_client_ip()` function which extracts the User's ip from the request headers, return the user's ip.
 
-    * `add_new_row_to_excel(new_row)` adds new row to excel with the case's information, requires the parsed User input (`new_row`) and returns nothing, is called by `predict_input()` method in `model_prediction_service.py`.
+    * `add_new_row_to_excel(new_row)` adds new row to excel with the case's information, requires the parsed User input (`new_row`) and returns nothing, is called by `predict_input()` function in `model_prediction_service.py`.
 
-    * `add_feedback_to_existing_row(data)` adds the feedback form's answers sent by the User, we compare each row to the Datetime given by the user, and where the Datetime matches we add the feedback to that row (Datetime could be changed to a UUID generated randomly), requires the request's payload (`data`) and  returns nothing, is called by the exposed feedback endpoint.
+    * `add_feedback_to_existing_row(data)` adds the feedback form's answers sent by the User, we search the table for a row with the same Datetime and we update that row with the feedback information (Datetime could be changed to a UUID generated randomly), requires the request's payload (`data`) and  returns nothing, is called by the exposed feedback endpoint.
 
-    * `generate_user_token_from_datetime(date_time)`, uses pyjwt library to crypt date_time before passing it to frontend, requires the Datetime field computed by `parse_new_row(data)`.
+    * `generate_user_token_from_datetime(date_time)`, uses pyjwt library to encrypt `date_time` before passing it to the frontend, requires the Datetime field computed by `parse_new_row(data)`.
 
-    * `get_datetime_from_user_token(user_token)`, uses pyjwt library to decrypt `user_token` to get the primary key of the row, requires the request header: `'User-Token'` passed by frontend, returns the decrypted `user_token`, is called by `add_feedback_to_existing_row(data)`.
+    * `get_datetime_from_user_token(user_token)`, uses pyjwt library to decrypt `user_token` to get the primary key of the row (`Datetime`). Requires the request header: `'User-Token'` passed by frontend, returns the decrypted `user_token`, is called by `add_feedback_to_existing_row(data)`.
 
 #### flexible_scaler.py
 Scaler Class used in the serialized models, we extracted this to make `model_prediction_service.py` cleaner.
@@ -142,9 +145,9 @@ Scaler Class used in the serialized models, we extracted this to make `model_pre
 #### model_prediction_service.py
 Used to interact with the models in `ml_models/` subfolder and contains the following functions:
 
-- `parse_input(data, model)`, method to parse the User input so that every Features not selected by the selected Model is `np.nan`, requires the requests payload (`data`) and the model selected (`model`), returns the parsed input.
+- `parse_input(data, model)`, function to parse the User input so that every Features not selected by the selected Model is `np.nan`, requires the requests payload (`data`) and the model selected (`model`), returns the parsed input.
 
-- `get_frontend_resources_from_prediction(clf_prediction, data)`, method which given the prediction of the selected model (`clf_prediction`), returns the frontend resources needed (`prediction_text`, `text_color`, `background_color`, `prediction`).
+- `get_frontend_resources_from_prediction(clf_prediction, data)`, function which given the prediction of the selected model (`clf_prediction`), returns the frontend resources needed (`prediction_text`, `text_color`, `background_color`, `prediction`).
 
 - `get_text_from_prediction_percent(percent)`, returns the appropriate `predictionText` based on the prediction given by the model in percentage `percent`, called by `get_frontend_resources_from_prediction(clf_prediction, data)`.
 
