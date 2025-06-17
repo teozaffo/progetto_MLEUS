@@ -21,7 +21,7 @@ let allMandatoryFeatures = {}
 document.addEventListener('DOMContentLoaded', async () => {
   resetAllFields();
 
-  document.getElementById("reset").addEventListener("click", () => resetAllFields());
+  document.getElementById("reset-btn").addEventListener("click", () => resetAllFields());
 
   allMandatoryFeatures = await fetchMandatoryFeatures();
 

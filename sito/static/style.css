@@ -78,13 +78,13 @@ input[type="radio"] {
   cursor: pointer;
 }
 
-#reset {
+#reset-btn {
   background-color: white;
   border: 1px solid black;
   color: black;
 }
 
-#reset:hover {
+#reset-btn:hover {
   background-color: #f0f0f0;
 }
 
