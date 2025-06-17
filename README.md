@@ -17,7 +17,7 @@ scikit-learn==1.6.1
 which can be seen in the `requirements.txt` file
 ## Dependencies installation
 
-First of all you have to first install the libraries in the  `requirements.txt` file by running this command on your console:
+First of all you have to install the libraries in the  `requirements.txt` file by running this command on your console:
 
 for **pip**:
 ``` bash
