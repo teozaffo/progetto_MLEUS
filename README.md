@@ -87,16 +87,16 @@ routes/
 ├── model_routes.py
 └── pages_routes.py
 ```
-where each file exposes an api endpoint, the files have a naming convention of `{scope}_routes.py` 
+where each file exposes api endpoints, the files have a naming convention of `{scope}_routes.py` 
 
 #### feedback_routes.py
 Exposes the api endpoint for saving the user's answer to the feedback form and calls the appropriate service
 
 #### model_routes.py
-Exposes the api endpoint for informations (features selected by the model) or actions (predicting a case given by the User) related to the Machine Learning models
+Exposes the api endpoints for informations (features selected by the model) or actions (predicting a case given by the User) related to the Machine Learning models
 
 #### pages_routes.py
-Exposes the api endpoint for rendering the Views (html pages)
+Exposes the api endpoints for rendering the Views (html pages)
 
 
 ### Services subfolder
