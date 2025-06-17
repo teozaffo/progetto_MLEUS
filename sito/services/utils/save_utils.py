@@ -93,16 +93,20 @@ def add_feddback_to_existing_row(data, user_token):
   date_time = get_datetime_from_user_token(user_token=user_token)
 
   # Confronto robusto con datetime localizzato
-  incoming_dt = parser.isoparse(date_time["Datetime"]).astimezone(pytz.timezone("Europe/Rome"))
+  incoming_dt = parser.isoparse(date_time["Datetime"])
   incoming_str = incoming_dt.strftime("%Y-%m-%d %H:%M")
+
 
   # Conversione della colonna Datetime
   df["Datetime"] = pd.to_datetime(df["Datetime"])
   excel_times = df["Datetime"].dt.strftime("%Y-%m-%d %H:%M")
+  print("Incoming datetime string:", incoming_str)
+  print("Excel datetime strings (tail):")
+  print(excel_times.tail(10).to_list())
   idx = excel_times[excel_times == incoming_str].index
 
   if len(idx) == 0:
-      print("❌ Riga non trovata per datetime:", date_time["Datetime"])
+      print("❌ Riga non trovata per datetime:", incoming_str)
       raise Exception("Riga non trovata")
 
   i = idx[0]
