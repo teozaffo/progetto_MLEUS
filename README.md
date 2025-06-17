@@ -11,7 +11,7 @@ pandas
 openpyxl
 flask-cors
 python-dotenv
-pyjwt
+PyJWT
 scikit-learn==1.6.1
 ```
 which can be seen in the `requirements.txt` file
