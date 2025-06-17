@@ -51,7 +51,7 @@ conda env create -f environment.yaml
 ```
 ## Starting the flask server
 
-To start the local server to run the website locally, you have to run the following command inside the root directory:
+To start the local server and run the website locally, you have to run the following command inside the root directory:
 ```
 #console
 flask --app app --debug run
