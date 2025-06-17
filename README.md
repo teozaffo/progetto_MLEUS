@@ -14,7 +14,7 @@ python-dotenv
 PyJWT
 scikit-learn==1.6.1
 ```
-which can be seen in the `requirements.txt` file
+which are in the `requirements.txt` file
 ## Dependencies installation
 
 First of all you have to install the libraries in the  `requirements.txt` file by running this command on your console:
