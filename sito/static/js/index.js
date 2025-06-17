@@ -179,7 +179,6 @@ const predictClass = async () => {
   }
 
   const formData = parseFormData();
-  sessionStorage.setItem("datetime", formData.datetime);
 
   const result = await sendInputToServer(formData);
   
@@ -201,7 +200,6 @@ const predictClass = async () => {
 const parseFormData = (result) => {
   return {
     model: currModel,
-    datetime: new Date().toISOString(),
     age: parseInt(document.getElementById('age').value),
     sex: parseInt(document.getElementById('sex').value),
     Dim1: parseInt(document.getElementById('Dim1').value),
@@ -247,7 +245,8 @@ const putResponseToSessionStorage = (response) => {
   sessionStorage.setItem("prediction", response.prediction);
   sessionStorage.setItem("predictionBackgroundColor", response.backgroundcolor);
   sessionStorage.setItem("predictionColor", response.textColor);
-  sessionStorage.setItem("predictionText", response.predictionText)
+  sessionStorage.setItem("predictionText", response.predictionText);
+  sessionStorage.setItem("userToken", response.userToken)
 
   console.log(response.prediction);
 }

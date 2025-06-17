@@ -81,7 +81,7 @@ def predict_input():
   # save user input, prediction and chosen model to excel file
   save_response = save_diagnosis(data=data, parsed_data=parsed_data)
   
-  response["datetime"] = save_response["datetime"]
+  response["userToken"] = save_response["user_token"]
   response ["message"] = "case predicted and saved successfully!"
   
   return response

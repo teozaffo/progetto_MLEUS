@@ -1,4 +1,4 @@
-from flask import Blueprint, request,jsonify
+from flask import Blueprint,jsonify
 from ..services.model_prediction_service import predict_input, get_mandatory_features
 
 model_bp = Blueprint('model', __name__)

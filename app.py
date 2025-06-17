@@ -10,6 +10,8 @@ import pytz
 from openpyxl import load_workbook, Workbook
 from dateutil import parser
 from sito import create_app
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = create_app()

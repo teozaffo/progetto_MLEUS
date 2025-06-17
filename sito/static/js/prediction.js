@@ -90,7 +90,6 @@ const addListenerToFeedBackForm = (event) => {
 
 const getFeedbackFormAnswers = () => {
   return {
-    datetime: sessionStorage.getItem("datetime"),
     q1: document.querySelector('input[name="reliability"]:checked')?.value,
     q2: document.querySelector('input[name="usefulness"]:checked')?.value,
     q3: document.querySelector('input[name="influence"]:checked')?.value,
@@ -100,17 +99,26 @@ const getFeedbackFormAnswers = () => {
 }
 
 const sendFeedbackToServerAndShowServerResponse = (feedback) => {
+  const userToken = sessionStorage.getItem("userToken");
+  console.log(userToken)
+
+
   fetch("/feedback", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "User-Token": userToken
     },
     body: JSON.stringify(feedback)
   })
   .then(response => response.json())
   .then(data => {
     console.log("Risposta dal server:", data);
-    showModal("success")
+    if (data.error !== undefined) {
+      showModal("failure");
+      return;
+    }
+    showModal("success");
   })
   .catch(error => {
     console.error("Errore nell'invio del questionario:", error);
