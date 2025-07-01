@@ -1,5 +1,4 @@
 from utils.save_utils import parse_new_row, add_new_row_to_excel, add_feddback_to_existing_row, generate_user_token_from_datetime
-from flask import request
 
 
 def save_diagnosis(data, parsed_data):
