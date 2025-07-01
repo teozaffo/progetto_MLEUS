@@ -63,7 +63,19 @@ const getAllPredictionInformationFromSessionStorage = () => {
 /*
 * Sets page elements that need prediction information dynamically
 */
+
 const setPageElementsBasedOnPredictionInformation = (predictionInformation) => {
+  const modelParts = predictionInformation.model.split("-");
+  const readableModel = modelParts[0]; // es. 'Balanced', 'Sensitive'
+
+  document.getElementById("result").innerText = predictionInformation.predictionText;
+  document.getElementById("result").style.backgroundColor = predictionInformation.backgroundColor;
+  document.getElementById("result").style.color = predictionInformation.textColor;
+  document.getElementById("selected-model").innerText = `Selected Model: ${readableModel}`;
+};
+
+
+/*const setPageElementsBasedOnPredictionInformation = (predictionInformation) => {
   document.getElementById("result").innerText = predictionInformation.predictionText;
   document.getElementById("result").style.backgroundColor = predictionInformation.backgroundColor;
   document.getElementById("result").style.color = predictionInformation.textColor;
@@ -72,7 +84,7 @@ const setPageElementsBasedOnPredictionInformation = (predictionInformation) => {
       .model
       .slice(0, predictionInformation.model.length - 3)
     }`;
-}
+}*/
 
 
 
