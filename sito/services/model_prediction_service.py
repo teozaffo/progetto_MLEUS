@@ -46,9 +46,7 @@ def parse_input(data, model):
 
       
 
-def predict_input():
-  data = request.get_json()
-  
+def predict_input(data):
   # check which model the user has chosen, schema is: [type-of-model]-[model]
   # where type-of-model can be "Sensitive", "Specific", etc..
   # and model can be "NB" or "DT"
