@@ -21,9 +21,7 @@ def save_diagnosis(data, parsed_data):
     raise Exception(str(e))
     
 
-def save_feedback():
-  data = request.get_json()
-  user_token = request.headers.get('User-Token')
+def save_feedback(data, user_token):
   print("📩 Ricevuto questionario:", data)
   
   try:

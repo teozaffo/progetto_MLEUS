@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from ..services.save_service import save_feedback
 
 feedback_bp = Blueprint('feedback', __name__)
@@ -6,7 +6,9 @@ feedback_bp = Blueprint('feedback', __name__)
 @feedback_bp.route("/feedback", methods=["POST"])
 def save_feedback_controller():
   try:
-    response = save_feedback()
+    data = request.get_json()
+    user_token = request.headers.get('User-Token')
+    response = save_feedback(data, user_token)
     return jsonify(response)
   except Exception as e:
     status = 500
