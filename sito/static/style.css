@@ -78,13 +78,13 @@ input[type="radio"] {
   cursor: pointer;
 }
 
-#reset {
+#reset-btn {
   background-color: white;
   border: 1px solid black;
   color: black;
 }
 
-#reset:hover {
+#reset-btn:hover {
   background-color: #f0f0f0;
 }
 
@@ -691,8 +691,21 @@ input[type="radio"] {
     cursor: pointer;
   }
 	
+  .form-row {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .form-row label {
+    white-space: normal;     
+    overflow-wrap: break-word;
+    flex: 1;                  
+  }
+
   .form-row select {
-    width: 40%;
+    min-width: 100px;         
+    flex-shrink: 0;           
+	width: 40%
   }
 
   .form-row input {

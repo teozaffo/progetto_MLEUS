@@ -4,6 +4,7 @@ import os
 from dateutil import parser
 from flask import request
 import pandas as pd
+import jwt
 from openpyxl import load_workbook
 
 excel_file_path = "./diagnosi.xlsx"
@@ -33,6 +34,7 @@ def parse_new_row(data):
     "Mult Lesions": data.get("Multiple"),
     "Prediction": data.get("prediction")
   }
+  
   
   
   
@@ -85,20 +87,26 @@ def add_new_row_to_excel(new_row):
   
   
       
-def add_feddback_to_existing_row(data):
+def add_feddback_to_existing_row(data, user_token):
   df = pd.read_excel(excel_file_path)
+  
+  date_time = get_datetime_from_user_token(user_token=user_token)
 
   # Confronto robusto con datetime localizzato
-  incoming_dt = parser.isoparse(data["datetime"]).astimezone(pytz.timezone("Europe/Rome"))
+  incoming_dt = parser.isoparse(date_time["Datetime"])
   incoming_str = incoming_dt.strftime("%Y-%m-%d %H:%M")
+
 
   # Conversione della colonna Datetime
   df["Datetime"] = pd.to_datetime(df["Datetime"])
   excel_times = df["Datetime"].dt.strftime("%Y-%m-%d %H:%M")
+  print("Incoming datetime string:", incoming_str)
+  print("Excel datetime strings (tail):")
+  print(excel_times.tail(10).to_list())
   idx = excel_times[excel_times == incoming_str].index
 
   if len(idx) == 0:
-      print("❌ Riga non trovata per datetime:", data["datetime"])
+      print("❌ Riga non trovata per datetime:", incoming_str)
       raise Exception("Riga non trovata")
 
   i = idx[0]
@@ -126,3 +134,20 @@ def add_feddback_to_existing_row(data):
       ws.column_dimensions[col_letter].width = adjusted_width
 
       wb.save(excel_file_path)
+      
+      
+def generate_user_token_from_datetime(date_time):
+  jwt_secret = os.getenv("JWT_SECRET")
+  jwt_algo = os.getenv("JWT_ALGO")
+  
+  user_token = jwt.encode({"Datetime": date_time}, jwt_secret, jwt_algo)
+  
+  return user_token
+  
+
+
+def get_datetime_from_user_token(user_token):
+  jwt_secret = os.getenv("JWT_SECRET")
+  jwt_algo = os.getenv("JWT_ALGO")
+  
+  return jwt.decode(user_token, jwt_secret, jwt_algo)

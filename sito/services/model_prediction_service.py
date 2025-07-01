@@ -81,7 +81,7 @@ def predict_input():
   # save user input, prediction and chosen model to excel file
   save_response = save_diagnosis(data=data, parsed_data=parsed_data)
   
-  response["datetime"] = save_response["datetime"]
+  response["userToken"] = save_response["user_token"]
   response ["message"] = "case predicted and saved successfully!"
   
   return response
@@ -116,15 +116,15 @@ def get_frontend_resources_from_prediction(clf_prediction, data):
 
 def get_text_from_prediction_percent(percent):
   if percent < 5:
-    return "Most Likely Benign"
+    return "Most Likely not-PDAC"
   elif percent < 45:
-    return "Likely Benign"
+    return "Likely not-PDAC"
   elif percent<= 55:
     return "Uncertain Case"
   elif percent <= 95:
-    return "Likely Malignant"
+    return "Likely PDAC"
   else:
-    return "Most Likely Malignant"
+    return "Most Likely PDAC"
   
   
 
