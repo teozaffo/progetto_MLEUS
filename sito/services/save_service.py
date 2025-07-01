@@ -1,5 +1,4 @@
 from utils.save_utils import parse_new_row, add_new_row_to_excel, add_feddback_to_existing_row, generate_user_token_from_datetime
-from flask import request
 
 
 def save_diagnosis(data, parsed_data):
@@ -21,11 +20,15 @@ def save_diagnosis(data, parsed_data):
     raise Exception(str(e))
     
 
-def save_feedback():
-  data = request.get_json()
-  user_token = request.headers.get('User-Token')
+def save_feedback(data, user_token):
   print("📩 Ricevuto questionario:", data)
   
+  try:
+    add_feddback_to_existing_row(data=data, user_token=user_token)
+    
+    return {"message": "Salvato con successo"}
+  except Exception as e:
+    raise Exception(str(e))
   try:
     add_feddback_to_existing_row(data=data, user_token=user_token)
     
