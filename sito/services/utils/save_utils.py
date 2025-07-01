@@ -16,7 +16,7 @@ def parse_new_row(data):
   print(data)
   return {
     "Datetime": datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M:%S"),
-    "Ip Address": get_client_ip(),
+    "Ip Address": data.get("Ip"),
     "Model": data.get("model", "unknown"),
     "Hospital Center": data.get("HospitalCenter", ""),
     "Protocol Code": data.get("ProtocolCode", ""),
@@ -34,18 +34,6 @@ def parse_new_row(data):
     "Mult Lesions": data.get("Multiple"),
     "Prediction": data.get("prediction")
   }
-  
-  
-  
-  
-def get_client_ip():
-  if request.headers.getlist("X-Forwarded-For"):
-    client_ip = request.headers.getlist("X-Forwarded-For")[0].split(',')[0].strip()
-  else:
-    client_ip = request.remote_addr
-    
-  print(f"client ip: {client_ip}")  
-  return client_ip
   
   
 
