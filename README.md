@@ -112,7 +112,7 @@ services/
 ├── model_prediction_service.py
 └── save_service.py
 ```
-the files have a naming convention of `{scope}_routes.py`.
+the files have a naming convention of `{scope}_service.py`.
 
 #### ml_models
 A subfolder containing the Machine Learning models used for predicting the cases.
