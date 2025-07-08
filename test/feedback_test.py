@@ -10,6 +10,7 @@ def test_feedback():
     
       page.goto("http://127.0.0.1:5000")
       
+      
       page.click('button:has-text("Explainable")')
       
       page.click('button:has-text("Classify")')
